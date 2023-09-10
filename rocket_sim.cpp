@@ -4,12 +4,14 @@
 
 using namespace JSBSim;
 
-int main() {
+int main(int argc, char** argv) {
     FGFDMExec FDMExec;
 
+    std::cout << "Loading JSBSim configuration file: " << argv[1] << std::endl;
+
     // Load your rocket configuration file
-    if (!FDMExec.LoadScript(SGPath("rocket.xml"))) {
-        std::cerr << "Failed to load rocket configuration file." << std::endl;
+    if (!FDMExec.LoadScript(SGPath(argv[1]))) {
+        std::cerr << "Failed to load jsbsim script file." << std::endl;
         return 1;
     }
 
