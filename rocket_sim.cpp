@@ -41,7 +41,7 @@ int main() {
     std::cout << "Starting simulation..." << std::endl;
 
     // Run the simulation loop until the rocket reaches the ground or 1000 seconds have passed
-    while (fdmExec->GetSimTime() < 1000.0 || fdmExec->GetPropagate()->GetAltitudeASL() > 0.0) {
+    while (fdmExec->GetSimTime() < 10.0 || fdmExec->GetPropagate()->GetAltitudeASL() > 0.0) {
         // Run the JSBSim simulation for one time step
         fdmExec->Run();
 

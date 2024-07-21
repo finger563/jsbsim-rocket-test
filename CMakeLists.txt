@@ -14,5 +14,10 @@ include_directories(${JSBSIM_INCLUDE_DIRS})
 
 add_executable(rocket_sim rocket_sim.cpp)
 
+# copy the ../aircraft and ../engine directories to the build directory
+file(COPY aircraft DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY engine DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY scripts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 # Link the JSBSim library
 target_link_libraries(rocket_sim ${JSBSIM_LIBRARIES})
