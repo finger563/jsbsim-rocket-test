@@ -5,6 +5,8 @@
 #include <FGFDMExec.h>
 #include <initialization/FGInitialCondition.h>
 #include <models/FGInertial.h>
+#include <models/FGPropulsion.h>
+#include <models/FGMassBalance.h>
 
 int main() {
     // Create an instance of the JSBSim flight dynamics model executor
@@ -31,6 +33,9 @@ int main() {
     fdmExec->GetIC()->SetLongitudeDegIC(0.0);
     fdmExec->GetIC()->SetThetaDegIC(90.0); // Launch angle
 
+    // add the hold down force
+    fdmExec->SetHoldDown(true);
+
     // Initialize the model again to apply initial conditions
     fdmExec->RunIC();
 
@@ -38,12 +43,28 @@ int main() {
     std::ofstream outputFile("rocket_trajectory.csv");
     outputFile << "Time,Altitude,Velocity\n";
 
+    std::cout << "Starting engines..." << std::endl;
+
+    // Start the rocket engines
+    for (int i = 0; i < fdmExec->GetPropulsion()->GetNumEngines(); i++) {
+        auto engine = fdmExec->GetPropulsion()->GetEngine(i);
+        engine->SetRunning(true);
+    }
+
     std::cout << "Starting simulation..." << std::endl;
 
     // Run the simulation loop until the rocket reaches the ground or 1000 seconds have passed
-    while (fdmExec->GetSimTime() < 10.0 || fdmExec->GetPropagate()->GetAltitudeASL() > 0.0) {
+    while (fdmExec->GetSimTime() < 10.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= 0.0) {
         // Run the JSBSim simulation for one time step
         fdmExec->Run();
+
+        // if the forces are greater than the inertial weight, disable the hold
+        // down
+        auto forces = fdmExec->GetPropulsion()->GetForces(2);
+        auto mass = fdmExec->GetMassBalance()->GetMass();
+        if (forces > mass * 9.81) {
+            fdmExec->SetHoldDown(false);
+        }
 
         // Get the current time, altitude, and velocity
         double time = fdmExec->GetSimTime();
