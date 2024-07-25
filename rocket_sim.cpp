@@ -48,13 +48,16 @@ int main() {
     // Start the rocket engines
     for (int i = 0; i < fdmExec->GetPropulsion()->GetNumEngines(); i++) {
         auto engine = fdmExec->GetPropulsion()->GetEngine(i);
+        std::cout << "Starting engine " << i + 1 << "..." << std::endl;
         engine->SetRunning(true);
+        engine->SetStarter(true);
+        fdmExec->GetPropulsion()->SetActiveEngine(i);
     }
 
     std::cout << "Starting simulation..." << std::endl;
 
     // Run the simulation loop until the rocket reaches the ground or 1000 seconds have passed
-    while (fdmExec->GetSimTime() < 10.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= 0.0) {
+    while (fdmExec->GetSimTime() < 1.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= 0.0) {
         // Run the JSBSim simulation for one time step
         fdmExec->Run();
 
@@ -62,6 +65,7 @@ int main() {
         // down
         auto forces = fdmExec->GetPropulsion()->GetForces(2);
         auto mass = fdmExec->GetMassBalance()->GetMass();
+        std::cout << "Forces: " << forces << ", Mass: " << mass * 9.81 << std::endl;
         if (forces > mass * 9.81) {
             fdmExec->SetHoldDown(false);
         }
