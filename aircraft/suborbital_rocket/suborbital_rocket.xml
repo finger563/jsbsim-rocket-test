@@ -155,8 +155,8 @@
           <length unit="FT"> 124.0 </length>
           <bore_diameter unit="FT"> 2.0 </bore_diameter>
         </grain_config>
-        <capacity unit="LBS"> 1114092 </capacity>
-        <contents unit="LBS"> 1114092 </contents>
+        <capacity unit="LBS"> 111409 </capacity>
+        <contents unit="LBS"> 111409 </contents>
       </tank>
 
       <!-- Right SRB -->
@@ -184,8 +184,8 @@
           <length unit="FT"> 124.0 </length>
           <bore_diameter unit="FT"> 2.0 </bore_diameter>
         </grain_config>
-        <capacity unit="LBS"> 1114092 </capacity>
-        <contents unit="LBS"> 1114092 </contents>
+        <capacity unit="LBS"> 111409 </capacity>
+        <contents unit="LBS"> 111409 </contents>
       </tank>
 
     </propulsion>

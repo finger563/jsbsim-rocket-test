@@ -16,7 +16,7 @@ int main() {
     fdmExec->Setdt(1.0 / 120.0);
 
     // Load the aircraft configuration file
-    if (!fdmExec->LoadModel("Suborbital_Rocket")) {
+    if (!fdmExec->LoadModel("j246")) {
         std::cerr << "Failed to load the aircraft model" << std::endl;
         return 1;
     }
@@ -37,7 +37,9 @@ int main() {
     fdmExec->SetHoldDown(true);
 
     // Initialize the model again to apply initial conditions
-    fdmExec->RunIC();
+    fdmExec->RunIC(); // run the initialization conditions
+    fdmExec->DoTrim(0.0); // trim the aircraft (if applicable)
+    fdmExec->Run(); // run the simulation
 
     // Open an output file to save the trajectory and velocity data
     std::ofstream outputFile("rocket_trajectory.csv");
@@ -48,25 +50,32 @@ int main() {
     // Start the rocket engines
     for (int i = 0; i < fdmExec->GetPropulsion()->GetNumEngines(); i++) {
         auto engine = fdmExec->GetPropulsion()->GetEngine(i);
-        std::cout << "Starting engine " << i + 1 << "..." << std::endl;
+        std::cout << "Starting engine " << i << "..." << std::endl;
         engine->SetRunning(true);
         engine->SetStarter(true);
         fdmExec->GetPropulsion()->SetActiveEngine(i);
+        // fdmExec->SetPropertyValue("propulsion/engine[" + std::to_string(i) + "]/set-running", 1);
+        // fdmExec->SetPropertyValue("propulsion/engine[" + std::to_string(i) + "]/throttle", 1.0);
     }
 
     std::cout << "Starting simulation..." << std::endl;
 
     // Run the simulation loop until the rocket reaches the ground or 1000 seconds have passed
-    while (fdmExec->GetSimTime() < 1.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= 0.0) {
+    while (fdmExec->GetSimTime() < 1000.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= 0.0) {
         // Run the JSBSim simulation for one time step
         fdmExec->Run();
 
         // if the forces are greater than the inertial weight, disable the hold
         // down
-        auto forces = fdmExec->GetPropulsion()->GetForces(2);
-        auto mass = fdmExec->GetMassBalance()->GetMass();
-        std::cout << "Forces: " << forces << ", Mass: " << mass * 9.81 << std::endl;
-        if (forces > mass * 9.81) {
+        auto forces = fdmExec->GetPropulsion()->GetForces(1);
+        // std::cout << "Forces: " << forces << std::endl;
+        // double total_forces_lbs = 0.0;
+        // for (int i = 0; i < fdmExec->GetPropulsion()->GetNumEngines(); i++) {
+        //     total_forces_lbs += fdmExec->GetPropertyValue("propulsion/engine[" + std::to_string(i) + "]/thrust-lbs");
+        // }
+        auto weight_lbs = fdmExec->GetMassBalance()->GetWeight();
+        std::cout << "Forces: " << forces << ", Weight: " << weight_lbs << std::endl;
+        if (forces > weight_lbs) {
             fdmExec->SetHoldDown(false);
         }
 
