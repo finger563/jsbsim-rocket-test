@@ -36,6 +36,8 @@ int main() {
     // add the hold down force
     fdmExec->SetHoldDown(true);
 
+    std::cout << "Starting simulation..." << std::endl;
+
     // Initialize the model again to apply initial conditions
     fdmExec->RunIC(); // run the initialization conditions
     fdmExec->DoTrim(0.0); // trim the aircraft (if applicable)
@@ -58,7 +60,11 @@ int main() {
         // fdmExec->SetPropertyValue("propulsion/engine[" + std::to_string(i) + "]/throttle", 1.0);
     }
 
-    std::cout << "Starting simulation..." << std::endl;
+    // print a list of all the properties
+    // auto properties = fdmExec->GetPropertyCatalog();
+    // for (auto prop : properties) {
+    //     std::cout << prop << std::endl;
+    // }
 
     // Run the simulation loop until the rocket reaches the ground or 1000 seconds have passed
     while (fdmExec->GetSimTime() < 1000.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= 0.0) {
