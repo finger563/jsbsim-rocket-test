@@ -31,7 +31,10 @@ int main() {
     fdmExec->GetIC()->SetAltitudeASLFtIC(0.0);
     fdmExec->GetIC()->SetLatitudeDegIC(37.0);
     fdmExec->GetIC()->SetLongitudeDegIC(-122.0);
-    fdmExec->GetIC()->SetThetaDegIC(90.0); // Launch angle
+    fdmExec->GetIC()->SetThetaDegIC(85.0); // Slightly off vertical for stability
+    fdmExec->GetIC()->SetVNorthFpsIC(0.0);
+    fdmExec->GetIC()->SetVEastFpsIC(0.0);
+    fdmExec->GetIC()->SetVDownFpsIC(0.0);
 
     // Initialize FCS properties
     fdmExec->SetPropertyValue("fcs/elevator-cmd-norm", 0.0);
@@ -54,14 +57,18 @@ int main() {
 
     // Start the rocket engine
     for (int i = 0; i < fdmExec->GetPropulsion()->GetNumEngines(); i++) {
+        std::cout << "Starting engine " << i << std::endl;
         auto engine = fdmExec->GetPropulsion()->GetEngine(i);
         engine->SetRunning(true);
         engine->SetStarter(true);
         fdmExec->GetPropulsion()->SetActiveEngine(i);
     }
 
+    float liftoff_threshold_agl = 10.0f;
+    bool did_liftoff = false;
+
     // Run the simulation loop
-    while (fdmExec->GetSimTime() < 1000.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= 0.0) {
+    while (fdmExec->GetSimTime() < 1000.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= -10.0) {
         // Run the JSBSim simulation for one time step
         fdmExec->Run();
 
@@ -70,23 +77,28 @@ int main() {
         double altitude = fdmExec->GetPropagate()->GetAltitudeASL();
         double velocity = fdmExec->GetPropagate()->GetVel(3); // Vertical velocity
 
+        if (velocity > 0.0f && altitude > liftoff_threshold_agl && !did_liftoff) {
+            std::cout << "Liftoff detected at " << altitude << " ft" << std::endl;
+            did_liftoff = true;
+        }
+
         // Track maximum altitude
-        if (altitude > max_altitude) {
+        if (did_liftoff && altitude > max_altitude) {
             max_altitude = altitude;
-        } else if (!reached_apogee && altitude < max_altitude) {
+        } else if (did_liftoff && !reached_apogee && altitude < max_altitude) {
             reached_apogee = true;
         }
 
         // Deploy drogue chute at apogee
         if (reached_apogee && !drogue_deployed) {
-            fdmExec->SetPropertyValue("external_reactions/drogue_chute/drag_area", 10.0);
+            fdmExec->SetPropertyValue("external_reactions/drogue_chute/drag_area", 5.0); // Reduced drag area
             drogue_deployed = true;
             std::cout << "Drogue chute deployed at " << altitude << " ft" << std::endl;
         }
 
-        // Deploy main chute below 500 feet
-        if (drogue_deployed && !main_deployed && altitude < 500.0) {
-            fdmExec->SetPropertyValue("external_reactions/main_chute/drag_area", 50.0);
+        // Deploy main chute below 1000 feet
+        if (drogue_deployed && !main_deployed && altitude < 1000.0) {
+            fdmExec->SetPropertyValue("external_reactions/main_chute/drag_area", 30.0); // Adjusted drag area
             main_deployed = true;
             std::cout << "Main chute deployed at " << altitude << " ft" << std::endl;
         }
@@ -95,6 +107,11 @@ int main() {
         std::cout << std::fixed << std::setprecision(2);
         std::cout << "Time: " << time << " s, Altitude: " << altitude << " ft, Velocity: " << velocity << " ft/s" << std::endl;
         outputFile << time << "," << altitude << "," << velocity << "," << drogue_deployed << "," << main_deployed << "\n";
+
+        if (did_liftoff && altitude < liftoff_threshold_agl) {
+            std::cout << "Rocket has reached the ground." << std::endl;
+            break;
+        }
     }
 
     std::cout << "Simulation complete." << std::endl;

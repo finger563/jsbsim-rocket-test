@@ -143,7 +143,7 @@
 
  <propulsion>
 
-   <engine file="my_engine">
+   <engine file="amateur_rocket_engine">
     <feed> 0 </feed>
 
     <thruster file="my_nozzle">
@@ -168,16 +168,7 @@
        <z>    -0.22 </z>
      </location>
      <capacity unit="LBS"> 3.48 </capacity>
-     <contents unit="LBS"> 1.74 </contents>
-  </tank>
-  <tank type="FUEL" number="1">
-     <location unit="FT">
-       <x>     4.10 </x>
-       <y>     0.00 </y>
-       <z>    -0.22 </z>
-     </location>
-     <capacity unit="LBS"> 3.48 </capacity>
-     <contents unit="LBS"> 1.74 </contents>
+     <contents unit="LBS"> 3.48 </contents>
   </tank>
 
  </propulsion>
