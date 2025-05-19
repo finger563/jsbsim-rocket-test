@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="http://jsbsim.sourceforge.net/JSBSim.xsl"?>
+
+<fdm_config name="amateur_rocket" version="2.0" release="ALPHA"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="http://jsbsim.sourceforge.net/JSBSim.xsd">
+
+ <fileheader>
+  <author>JSBSim Rocket Configuration</author>
+  <filecreationdate>16 May 2025</filecreationdate>
+  <version>1.0</version>
+  <description>Models an amateur rocket.</description>
+ </fileheader>
+
+ <metrics>
+   <wingarea unit="FT2">0.25</wingarea>
+   <wingspan unit="FT">0.50</wingspan>
+   <chord unit="FT">0.09</chord>
+   <htailarea unit="FT2">0.04</htailarea>
+   <htailarm unit="FT">4.68</htailarm>
+   <vtailarea unit="FT2">0.03</vtailarea>
+   <vtailarm unit="FT">4.50</vtailarm>
+   <location name="AERORP" unit="FT">
+     <x>4.32</x>
+     <y>0.00</y>
+     <z>0.00</z>
+   </location>
+ </metrics>
+
+ <mass_balance>
+   <ixx unit="SLUG*FT2">0.01</ixx>
+   <iyy unit="SLUG*FT2">3.50</iyy>
+   <izz unit="SLUG*FT2">1.33</izz>
+   <emptywt unit="LBS">43.00</emptywt>
+   <location name="CG" unit="FT">
+     <x>4.10</x>
+     <y>0.00</y>
+     <z>-0.22</z>
+   </location>
+ </mass_balance>
+
+ <propulsion>
+   <engine file="L1720">
+     <feed>0</feed>
+     <thruster file="L1720_nozzle">
+       <location unit="FT">
+         <x>4.00</x>
+         <y>0.00</y>
+         <z>0.00</z>
+       </location>
+       <orient unit="DEG">
+         <pitch>0.00</pitch>
+         <roll>0.00</roll>
+         <yaw>0.00</yaw>
+       </orient>
+     </thruster>
+   </engine>
+
+   <tank name="FuelTank" type="FUEL" unit="LBS">
+     <location unit="FT">
+       <x>4.10</x>
+       <y>0.00</y>
+       <z>-0.22</z>
+     </location>
+     <capacity>3.48</capacity>
+     <contents>1.74</contents>
+   </tank>
+ </propulsion>
+
+ <!-- <system file="Conventional Controls.xml"/> -->
+ <!-- <system file="Rescue_Chute.xml"/> -->
+
+ <flight_control name="FCS">
+   <property name="fcs/gear-no-wow" value="1"/>
+ </flight_control>
+
+ <aerodynamics>
+   <axis name="LIFT">
+     <function name="aero/force/Lift_alpha">
+       <description>Lift due to alpha</description>
+       <product>
+         <property>aero/qbar-psf</property>
+         <property>metrics/Sw-sqft</property>
+         <table>
+           <independentVar lookup="row">aero/alpha-rad</independentVar>
+           <tableData>
+             -1.57  0.0000
+             -1.22 -0.6427
+             -1.05 -0.8659
+             -0.88 -0.9999
+              0.00  0.0095
+              0.88  1.0001
+              1.05  0.8661
+              1.22  0.6429
+              1.57  0.0000
+           </tableData>
+         </table>
+       </product>
+     </function>
+   </axis>
+
+   <axis name="DRAG">
+     <function name="aero/force/Drag_minimum">
+       <description>Minimum drag</description>
+       <product>
+         <property>aero/qbar-psf</property>
+         <property>metrics/Sw-sqft</property>
+         <value>0.0026</value>
+       </product>
+     </function>
+
+     <function name="aero/force/Drag_alpha">
+       <description>Drag due to alpha</description>
+       <product>
+         <property>aero/qbar-psf</property>
+         <property>metrics/Sw-sqft</property>
+         <table>
+           <independentVar lookup="row">aero/alpha-rad</independentVar>
+           <tableData>
+             -1.57  2.3091
+              0.00  0.0000
+              1.57  2.3091
+           </tableData>
+         </table>
+       </product>
+     </function>
+   </axis>
+
+   <axis name="SIDE">
+     <function name="aero/force/Side_beta">
+       <description>Side force due to beta</description>
+       <product>
+         <property>aero/qbar-psf</property>
+         <property>metrics/Sw-sqft</property>
+         <property>aero/beta-rad</property>
+         <value>76.9778</value>
+       </product>
+     </function>
+   </axis>
+ </aerodynamics>
+
+ <ground_reactions>
+   <contact type="BOGEY" name="LAUNCH_RAIL">
+     <location unit="FT">
+       <x>0.0</x>
+       <y>0.0</y>
+       <z>-24.0</z>
+     </location>
+     <static_friction>0.8</static_friction>
+     <dynamic_friction>0.7</dynamic_friction>
+     <rolling_friction>0.01</rolling_friction>
+     <spring_coeff unit="LBS/FT">100.0</spring_coeff>
+     <damping_coeff unit="LBS/FT/SEC">10.0</damping_coeff>
+     <max_steer unit="DEG">0.0</max_steer>
+     <brake_group>NONE</brake_group>
+   </contact>
+ </ground_reactions>
+
+</fdm_config>

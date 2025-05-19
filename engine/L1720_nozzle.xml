@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<nozzle name="Cesaroni L1720 Nozzle">
+  <!--
+    area = nozzle exit area
+  -->
+  <area unit="FT2">  .05 </area>
+</nozzle>

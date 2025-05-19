@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!--
+    See:  http://wiki.flightgear.org/JSBSim_Thrusters#FGNozzle
+
+    pe      = Nozzle exit pressure, psf.
+    area    = Nozzle exit area, sqft.
+  -->
+
+<nozzle name="my_nozzle">
+  <pe unit="PSF"> 0.000110557 </pe>
+  <area unit="FT2"> 0.0490874 </area>
+</nozzle>

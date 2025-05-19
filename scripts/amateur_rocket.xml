@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="http://jsbsim.sf.net/JSBSimScript.xsl"?>
+<runscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://jsbsim.sf.net/JSBSimScript.xsd"
+    name="Amateur Rocket Launch">
+  <description>
+    Amateur rocket launch simulation with dual-stage parachute deployment
+  </description>
+  <use aircraft="amateur_rocket" initialize="launch"/>
+  <run start="0.0" end="300" dt="0.0083333333333333333">
+    <property value="2">simulation/integrator/rate/rotational</property>
+    <property value="3">simulation/integrator/rate/translational</property>
+    <property value="3">simulation/integrator/position/rotational</property>
+    <property value="3">simulation/integrator/position/translational</property>
+    <property value="1">forces/hold-down</property>
+
+    <event name="Start Engine">
+      <condition>simulation/sim-time-sec ge 1.0</condition>
+      <set name="propulsion/rocket/thrust-lbs" value="2000.0"/>
+      <notify/>
+    </event>
+
+    <event name="Release">
+      <condition>forces/fbx-prop-lbs gt inertia/weight-lbs</condition>
+      <set name="forces/hold-down" value="0"/>
+      <notify/>
+    </event>
+
+    <event name="Deploy Drogue">
+      <condition>velocities/h-dot-fps lt 0</condition>
+      <set name="external_reactions/drogue_chute/drag_area" value="10.0"/>
+      <notify/>
+    </event>
+
+    <event name="Deploy Main">
+      <condition>position/h-agl-ft lt 500</condition>
+      <set name="external_reactions/main_chute/drag_area" value="50.0"/>
+      <notify/>
+    </event>
+
+    <event name="Vehicle state:" persistent="true">
+      <description>Output message at 1 second intervals</description>
+      <notify>
+        <description>Vehicle state:</description>
+        <property caption="Time: ">simulation/sim-time-sec</property>
+        <property caption="Altitude AGL (ft): ">position/h-agl-ft</property>
+        <property caption="Vertical Velocity (ft/s): ">velocities/h-dot-fps</property>
+        <property caption="Drogue Deployed: ">external_reactions/drogue_chute/drag_area</property>
+        <property caption="Main Deployed: ">external_reactions/main_chute/drag_area</property>
+      </notify>
+      <condition>simulation/sim-time-sec >= simulation/notify-time-trigger</condition>
+      <set name="simulation/notify-time-trigger" value="1" type="delta"/>
+    </event>
+  </run>
+</runscript> 
