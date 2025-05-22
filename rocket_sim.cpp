@@ -96,11 +96,20 @@ int main() {
                 auto engine = fdmExec->GetPropulsion()->GetEngine(0);
                 double throttle = fdmExec->GetFCS()->GetThrottlePos(0);
                 double propellant_consumed = 3.9 - fdmExec->GetPropulsion()->GetTank(0)->GetContents();
+                
+                // Get more detailed engine state by checking properties
+                double burnTime = fdmExec->GetPropertyValue("propulsion/engine/burn-time");
+                double vacThrust = fdmExec->GetPropertyValue("propulsion/engine/vacuum-thrust-lbs");
+                double fuelFlowRate = fdmExec->GetPropertyValue("propulsion/engine/fuel-flow-rate-pps");
+                
                 std::cout << "t=" << std::fixed << std::setprecision(3) << time << "s: Throttle=" << throttle 
                           << ", Engine running=" << engine->GetRunning() 
                           << ", Thrust=" << engine->GetThrust() << "lbs" 
                           << ", Fuel remaining=" << fdmExec->GetPropulsion()->GetTank(0)->GetContents() << "lbs"
-                          << ", Propellant consumed=" << propellant_consumed << "lbs" << std::endl;
+                          << ", Propellant consumed=" << propellant_consumed << "lbs"
+                          << ", Burn time=" << burnTime << "s"
+                          << ", Vac thrust=" << vacThrust << "lbs"
+                          << ", Fuel flow=" << fuelFlowRate << "lbs/s" << std::endl;
             }
         }
 

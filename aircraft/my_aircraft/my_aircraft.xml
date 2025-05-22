@@ -143,6 +143,7 @@
 
  <propulsion>
     <engine file="cesaroni_l1720_engine">
+        <feed>0</feed>
         <running>0</running>
         <starter>0</starter>
         <thruster file="l1720_nozzle">
