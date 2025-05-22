@@ -95,16 +95,16 @@
 -->
 
  <metrics>
-   <wingarea  unit="FT2"> 0.25     </wingarea>
-   <wingspan  unit="FT" > 0.50     </wingspan>
+   <wingarea  unit="FT2"> 0.196     </wingarea>  <!-- Pi * (0.25)^2 for 6" diameter -->
+   <wingspan  unit="FT" > 0.50     </wingspan>   <!-- Minimal fins -->
    <wing_incidence unit="DEG"> 0.00 </wing_incidence>
    <chord     unit="FT" > 0.09     </chord>
    <htailarea unit="FT2"> 0.04     </htailarea>
    <htailarm  unit="FT" > 4.68     </htailarm>
    <vtailarea  unit="FT2">0.03     </vtailarea>
    <vtailarm  unit="FT" > 4.50     </vtailarm>
-   <location name="AERORP" unit="FT">
-     <x> 4.32     </x>
+   <location name="AERORP" unit="FT">  <!-- Center of Pressure at 68.1" -->
+     <x> 5.675     </x>
      <y> 0.00     </y>
      <z> 0.00     </z>
    </location>
@@ -121,56 +121,52 @@
  </metrics>
 
  <mass_balance>
-   <ixx unit="SLUG*FT2">  0.01     </ixx>
-   <iyy unit="SLUG*FT2">  3.50     </iyy>
-   <izz unit="SLUG*FT2">  1.33     </izz>
-   <emptywt unit="LBS" >  43.00    </emptywt>
-   <location name="CG" unit="FT">
-     <x> 4.10     </x>
+   <ixx unit="SLUG*FT2">  0.1     </ixx>  <!-- Roll inertia for 6" diameter rocket -->
+   <iyy unit="SLUG*FT2">  8.5     </iyy>   <!-- Pitch/Yaw inertia for 109" rocket -->
+   <izz unit="SLUG*FT2">  8.5     </izz>   <!-- Pitch/Yaw inertia for 109" rocket -->
+   <emptywt unit="LBS" >  43.00    </emptywt>  <!-- From specs -->
+   <location name="CG" unit="FT">  <!-- Center of Gravity at 54.9" -->
+     <x> 4.575     </x>
      <y> 0.00     </y>
-     <z> -0.22    </z>
+     <z> 0.00     </z>
    </location>
-   <pointmass name="Payload">
-    <description> -2.96 lbs should bring model up to entered max weight </description>
-    <weight unit="LBS"> -1.48 </weight>
-    <location name="POINTMASS" unit="FT">
-     <x> 4.10     </x>
+   <pointmass name="Motor">
+    <description> Cesaroni L1720 motor propellant mass </description>
+    <weight unit="LBS"> 3.9 </weight>  <!-- Wet mass 46.9 - dry mass 43.0 -->
+    <location name="POINTMASS" unit="FT">  <!-- Motor location at rear -->
+     <x> 7.5     </x>  <!-- Around 90" from nose -->
      <y> 0.00     </y>
-     <z> -0.22    </z>
+     <z> 0.00    </z>
    </location>
   </pointmass>
  </mass_balance>
 
  <propulsion>
-
-   <engine file="amateur_rocket_engine">
-    <feed> 0 </feed>
-
-    <thruster file="my_nozzle">
-     <sense> 1 </sense>
-     <location unit="FT">
-       <x>     4.00 </x>
-       <y>     0.00 </y>
-       <z>     0.00 </z>
-     </location>
-     <orient unit="DEG">
-       <pitch>     0.00 </pitch>
-        <roll>     0.00 </roll>
-         <yaw>     0.00 </yaw>
-     </orient>
-    </thruster>
-  </engine>
-
-  <tank type="FUEL" number="0">
-     <location unit="FT">
-       <x>     4.10 </x>
-       <y>     0.00 </y>
-       <z>    -0.22 </z>
-     </location>
-     <capacity unit="LBS"> 3.48 </capacity>
-     <contents unit="LBS"> 3.48 </contents>
-  </tank>
-
+    <engine file="cesaroni_l1720_engine">
+        <running>0</running>
+        <starter>0</starter>
+        <thruster file="l1720_nozzle">
+            <location unit="FT">  <!-- Motor at rear of rocket -->
+                <x>9.08</x>  <!-- 109" from nose -->
+                <y>0.0</y>
+                <z>0.0</z>
+            </location>
+            <orient>
+                <pitch unit="DEG">0.0</pitch>  <!-- Pointing aft -->
+                <yaw unit="DEG">0.0</yaw>
+            </orient>
+        </thruster>
+    </engine>
+    <tank type="FUEL">
+        <fuel_type>FUEL</fuel_type>
+        <location unit="FT">  <!-- Motor fuel location -->
+            <x>7.5</x>  <!-- Motor center -->
+            <y>0.0</y>
+            <z>0.0</z>
+        </location>
+        <capacity unit="LBS">3.9</capacity>  <!-- L1720 propellant mass -->
+        <contents unit="LBS">3.9</contents>
+    </tank>
  </propulsion>
 
  <system file="Conventional Controls.xml"/>
@@ -251,11 +247,11 @@
     <!-- CD0 is based on fuselage, wing, horizontal- en vertical tail -->
     <!-- CD for gear (fixed and retractable) is defined below         -->
     <function name="aero/force/Drag_minimum">
-       <description>Minimum drag</description>
+       <description>Minimum drag - rocket body drag coefficient</description>
        <product>
           <property>aero/qbar-psf</property>
           <property>metrics/Sw-sqft</property>
-          <value> 0.0026 </value>
+          <value> 0.45 </value>  <!-- Typical rocket CD ~0.45 for 6" diameter -->
        </product>
     </function>
 
@@ -388,13 +384,13 @@
   <axis name="PITCH">
 
     <function name="aero/moment/Pitch_alpha">
-       <description>Pitch moment due to alpha</description>
+       <description>Pitch moment due to alpha - rocket stability</description>
        <product>
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <property>metrics/cbarw-ft</property>
            <property>aero/alpha-rad</property>
-           <value> -0.5000 </value>
+           <value> -2.5 </value>  <!-- More stable due to fins and CP aft of CG -->
        </product>
     </function>
 
@@ -618,26 +614,42 @@
  </aerodynamics>
 
  <external_reactions>
-  <property value="0">systems/chute/chute-reef-pos-norm</property>
-  <property value="0">systems/chute/chute-size-factor</property>
+  <property value="0">external_reactions/drogue_chute/drag_area</property>
+  <property value="0">external_reactions/main_chute/drag_area</property>
 
-  <force name="chute" frame="WIND">
+  <force name="drogue_chute" frame="WIND">
    <function>
     <product>
      <property>aero/qbar-psf</property>
-     <property>systems/chute/chute-reef-pos-norm</property>
-     <property>systems/chute/chute-size-factor</property>
-     <value> 1 </value>
-     <value> 600 </value>
+     <property>external_reactions/drogue_chute/drag_area</property>
     </product>
    </function>
-   <location unit="FT">
+   <location unit="FT">  <!-- Nose of rocket for drogue -->
     <x> 0 </x>
     <y> 0 </y>
     <z> 0 </z>
    </location>
    <direction>
-    <x>-1 </x>
+    <x>-1 </x>  <!-- Opposes forward motion -->
+    <y> 0 </y>
+    <z> 0 </z>
+   </direction>
+  </force>
+
+  <force name="main_chute" frame="WIND">
+   <function>
+    <product>
+     <property>aero/qbar-psf</property>
+     <property>external_reactions/main_chute/drag_area</property>
+    </product>
+   </function>
+   <location unit="FT">  <!-- Nose of rocket for main chute -->
+    <x> 0 </x>
+    <y> 0 </y>
+    <z> 0 </z>
+   </location>
+   <direction>
+    <x>-1 </x>  <!-- Opposes forward motion -->
     <y> 0 </y>
     <z> 0 </z>
    </direction>
@@ -647,16 +659,30 @@
 
  <ground_reactions>
     <contact type="BOGEY" name="LAUNCH_RAIL">
-        <location unit="FT">
-            <x>0.0</x>
+        <location unit="FT">  <!-- Launch rail contact at base of rocket -->
+            <x>9.08</x>  <!-- Bottom of rocket -->
             <y>0.0</y>
-            <z>-24.0</z>
+            <z>-0.25</z>  <!-- Reduced offset to prevent immediate ground contact -->
         </location>
         <static_friction>0.8</static_friction>
         <dynamic_friction>0.7</dynamic_friction>
         <rolling_friction>0.01</rolling_friction>
-        <spring_coeff unit="LBS/FT">100.0</spring_coeff>
-        <damping_coeff unit="LBS/FT/SEC">10.0</damping_coeff>
+        <spring_coeff unit="LBS/FT">2000.0</spring_coeff>  <!-- Reduced for stability -->
+        <damping_coeff unit="LBS/FT/SEC">200.0</damping_coeff>  <!-- Reduced for stability -->
+        <max_steer unit="DEG">0.0</max_steer>
+        <brake_group>NONE</brake_group>
+    </contact>
+    <contact type="BOGEY" name="NOSE_CONTACT">
+        <location unit="FT">  <!-- Nose contact for landing -->
+            <x>0.0</x>  <!-- Nose of rocket -->
+            <y>0.0</y>
+            <z>-0.25</z>  <!-- Reduced offset to prevent immediate ground contact -->
+        </location>
+        <static_friction>0.6</static_friction>
+        <dynamic_friction>0.5</dynamic_friction>
+        <rolling_friction>0.02</rolling_friction>
+        <spring_coeff unit="LBS/FT">1000.0</spring_coeff>  <!-- Reduced for stability -->
+        <damping_coeff unit="LBS/FT/SEC">100.0</damping_coeff>  <!-- Reduced for stability -->
         <max_steer unit="DEG">0.0</max_steer>
         <brake_group>NONE</brake_group>
     </contact>

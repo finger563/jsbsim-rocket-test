@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<!--
+  File:     amateur_rocket_engine.xml
+  Description: Minimal JSBSim solid rocket engine, based on SRB example.
+-->
+
+<rocket_engine name="amateur_rocket_engine">
+    <isp>220.0</isp>
+    <builduptime>0.1</builduptime>
+    <minthrottle>0.0</minthrottle>
+    <maxthrottle>1.0</maxthrottle>
+    <slfuelflowmax>1.95</slfuelflowmax>
+    <sloxiflowmax>0.0</sloxiflowmax>
+    <thrust_table name="propulsion/thrust_time" type="internal">
+        <tableData>
+            0.0 0.0
+            0.05 400.0
+            0.10 420.0
+            0.30 430.0
+            0.60 410.0
+            1.00 390.0
+            1.50 380.0
+            2.00 350.0
+            2.20 0.0
+        </tableData>
+    </thrust_table>
+</rocket_engine> 
