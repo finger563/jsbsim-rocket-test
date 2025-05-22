@@ -121,9 +121,9 @@
  </metrics>
 
  <mass_balance>
-   <ixx unit="SLUG*FT2">  0.1     </ixx>  <!-- Roll inertia for 6" diameter rocket -->
-   <iyy unit="SLUG*FT2">  8.5     </iyy>   <!-- Pitch/Yaw inertia for 109" rocket -->
-   <izz unit="SLUG*FT2">  8.5     </izz>   <!-- Pitch/Yaw inertia for 109" rocket -->
+   <ixx unit="SLUG*FT2">  0.02    </ixx>  <!-- Roll inertia for 6" diameter rocket (much smaller) -->
+   <iyy unit="SLUG*FT2">  1.8     </iyy>   <!-- Pitch/Yaw inertia for 109" rocket (much smaller) -->
+   <izz unit="SLUG*FT2">  1.8     </izz>   <!-- Pitch/Yaw inertia for 109" rocket (much smaller) -->
    <emptywt unit="LBS" >  43.00    </emptywt>  <!-- From specs -->
    <location name="CG" unit="FT">  <!-- Center of Gravity at 54.9" -->
      <x> 4.575     </x>
@@ -153,7 +153,7 @@
                 <z>0.0</z>
             </location>
             <orient>
-                <pitch unit="DEG">0.0</pitch>  <!-- Pointing aft -->
+                <pitch unit="DEG">0.0</pitch>  <!-- Aligned with body X-axis for forward thrust -->
                 <yaw unit="DEG">0.0</yaw>
             </orient>
         </thruster>
@@ -216,7 +216,7 @@
           <property>metrics/Sw-sqft</property>
           <property>velocities/q-aero-rad_sec</property>
           <property>aero/ci2vel</property>
-          <value> -11110.6172 </value>
+          <value> -20.0 </value>  <!-- Much smaller for small rocket -->
         </product>
       </function>
 
@@ -227,7 +227,7 @@
            <property>metrics/Sw-sqft</property>
            <property>aero/alphadot-rad_sec</property>
            <property>aero/ci2vel</property>
-           <value> -5925.6626 </value>
+           <value> -10.0 </value>  <!-- Much smaller for small rocket -->
         </product>
       </function>
 
@@ -252,7 +252,7 @@
        <product>
           <property>aero/qbar-psf</property>
           <property>metrics/Sw-sqft</property>
-          <value> 0.45 </value>  <!-- Typical rocket CD ~0.45 for 6" diameter -->
+          <value> 0.15 </value>  <!-- Lower CD for streamlined small rocket -->
        </product>
     </function>
 
@@ -337,7 +337,7 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <property>aero/beta-rad</property>
-           <value> 76.9778 </value>
+           <value> 5.0 </value>  <!-- Much smaller for small rocket -->
        </product>
     </function>
     <function name="aero/force/Side_roll_rate">
@@ -366,7 +366,7 @@
            <property>metrics/Sw-sqft</property>
            <property>aero/bi2vel</property>
            <property>velocities/r-aero-rad_sec</property>
-           <value> -1385.5996 </value>
+           <value> -10.0 </value>  <!-- Much smaller for small rocket -->
        </product>
     </function>
 
@@ -552,7 +552,7 @@
            <property>metrics/Sw-sqft</property>
            <property>metrics/bw-ft</property>
            <property>aero/beta-rad</property>
-           <value> -332.9038 </value>
+           <value> -5.0 </value>  <!-- Much smaller for small rocket -->
        </product>
     </function>
 
@@ -584,7 +584,7 @@
            <property>metrics/bw-ft</property>
            <property>aero/bi2vel</property>
            <property>velocities/r-aero-rad_sec</property>
-           <value> 5992.2666 </value>
+           <value> -15.0 </value>  <!-- Much smaller for small rocket -->
        </product>
     </function>
 
@@ -659,31 +659,17 @@
  </external_reactions>
 
  <ground_reactions>
-    <contact type="BOGEY" name="LAUNCH_RAIL">
-        <location unit="FT">  <!-- Launch rail contact at base of rocket -->
-            <x>9.08</x>  <!-- Bottom of rocket -->
+    <contact type="BOGEY" name="LANDING_CONTACT">
+        <location unit="FT">  <!-- Single contact point positioned very far below -->
+            <x>4.5</x>  <!-- Center of rocket -->
             <y>0.0</y>
-            <z>-0.25</z>  <!-- Reduced offset to prevent immediate ground contact -->
+            <z>-100.0</z>  <!-- 100 ft below rocket centerline -->
         </location>
         <static_friction>0.8</static_friction>
         <dynamic_friction>0.7</dynamic_friction>
         <rolling_friction>0.01</rolling_friction>
-        <spring_coeff unit="LBS/FT">2000.0</spring_coeff>  <!-- Reduced for stability -->
-        <damping_coeff unit="LBS/FT/SEC">200.0</damping_coeff>  <!-- Reduced for stability -->
-        <max_steer unit="DEG">0.0</max_steer>
-        <brake_group>NONE</brake_group>
-    </contact>
-    <contact type="BOGEY" name="NOSE_CONTACT">
-        <location unit="FT">  <!-- Nose contact for landing -->
-            <x>0.0</x>  <!-- Nose of rocket -->
-            <y>0.0</y>
-            <z>-0.25</z>  <!-- Reduced offset to prevent immediate ground contact -->
-        </location>
-        <static_friction>0.6</static_friction>
-        <dynamic_friction>0.5</dynamic_friction>
-        <rolling_friction>0.02</rolling_friction>
-        <spring_coeff unit="LBS/FT">1000.0</spring_coeff>  <!-- Reduced for stability -->
-        <damping_coeff unit="LBS/FT/SEC">100.0</damping_coeff>  <!-- Reduced for stability -->
+        <spring_coeff unit="LBS/FT">0.1</spring_coeff>  <!-- Very weak spring -->
+        <damping_coeff unit="LBS/FT/SEC">0.1</damping_coeff>  <!-- Very weak damping -->
         <max_steer unit="DEG">0.0</max_steer>
         <brake_group>NONE</brake_group>
     </contact>

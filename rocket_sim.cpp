@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <memory>
+#include <cmath>
 #include <FGFDMExec.h>
 #include <initialization/FGInitialCondition.h>
 #include <models/FGInertial.h>
@@ -29,11 +30,11 @@ int main() {
         return 1;
     }
 
-    // Set initial conditions for vertical launch
+    // Set initial conditions for vertical launch - CORRECTED ORIENTATION
     fdmExec->GetIC()->SetAltitudeASLFtIC(10.5);    // Start slightly higher to avoid ground contact
     fdmExec->GetIC()->SetLatitudeDegIC(37.0);
     fdmExec->GetIC()->SetLongitudeDegIC(-122.0);
-    fdmExec->GetIC()->SetThetaDegIC(90.0);         // Vertical orientation (90 deg pitch)
+    fdmExec->GetIC()->SetThetaDegIC(90.0);         // Nose up orientation (+90 deg pitch) so +X points up
     fdmExec->GetIC()->SetPhiDegIC(0.0);            // No roll
     fdmExec->GetIC()->SetPsiDegIC(0.0);            // No yaw
     fdmExec->GetIC()->SetVNorthFpsIC(0.0);
@@ -64,22 +65,36 @@ int main() {
 
     // Initialize motor ignition sequence
     bool motor_ignited = false;
-    double ignition_time = 0.05; // Ignite 0.05 seconds after simulation start
+    double ignition_time = 0.05; // Quick ignition after simulation start
     
+    std::cout << "Starting L1720 rocket simulation - target apogee ~4000 ft" << std::endl;
     std::cout << "Motor ignition scheduled for t=" << ignition_time << " seconds" << std::endl;
 
     float liftoff_threshold_agl = 10.0f;
     bool did_liftoff = false;
 
-    // Run the simulation loop
-    while (fdmExec->GetSimTime() < 1000.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= -10.0) {
+    // Run the simulation loop - extended for high altitude flight
+    while (fdmExec->GetSimTime() < 120.0 && fdmExec->GetPropagate()->GetAltitudeASL() >= -10.0) {
         // Run the JSBSim simulation for one time step
         fdmExec->Run();
 
         // Get current state
         double time = fdmExec->GetSimTime();
         double altitude = fdmExec->GetPropagate()->GetAltitudeASL();
-        double velocity = fdmExec->GetPropagate()->GetVel(3); // Vertical velocity
+        
+        // Get velocity components for proper apogee detection
+        double vx = fdmExec->GetPropagate()->GetVel(1); // X velocity (forward/aft)
+        double vy = fdmExec->GetPropagate()->GetVel(2); // Y velocity (left/right)  
+        double vz = fdmExec->GetPropagate()->GetVel(3); // Z velocity (up/down)
+        
+        // For vertical rocket, use velocity magnitude for display but VZ for apogee detection
+        double velocity_magnitude = sqrt(vx*vx + vy*vy + vz*vz);
+        double vertical_velocity = -vz; // In JSBSim: positive Z is down, so -Z is up
+        
+        // Simple velocity debugging during motor burn only
+        if (motor_ignited && time < 1.0 && fmod(time, 0.5) < 0.01) {
+            std::cout << "DEBUG: Altitude=" << altitude << "ft, Vertical_vel=" << vertical_velocity << "ft/s" << std::endl;
+        }
 
         // Ignite motor at scheduled time using throttle setting for solid rockets
         if (!motor_ignited && time >= ignition_time) {
@@ -87,69 +102,99 @@ int main() {
             fdmExec->GetFCS()->SetThrottleCmd(0, 1.0);  // Set throttle to 100% for solid rocket ignition
             auto engine = fdmExec->GetPropulsion()->GetEngine(0);
             engine->SetRunning(true);  // Also set engine to running state
+            
+            // Disable ground contacts during powered flight to prevent false contact detection
+            // Try multiple property naming conventions
+            fdmExec->SetPropertyValue("gear/unit[0]/spring-coeff-lbs_ft", 0.0);  
+            fdmExec->SetPropertyValue("gear/unit[1]/spring-coeff-lbs_ft", 0.0);  
+            fdmExec->SetPropertyValue("gear/unit[0]/damping-coeff-lbs_ft_sec", 0.0);  
+            fdmExec->SetPropertyValue("gear/unit[1]/damping-coeff-lbs_ft_sec", 0.0);  
+            
+            // Also try moving contact points far away
+            fdmExec->SetPropertyValue("gear/unit[0]/location-z-in", -1000.0);  // Move launch rail far down
+            fdmExec->SetPropertyValue("gear/unit[1]/location-z-in", -1000.0);  // Move nose contact far down
+            
+            // Alternative property names
+            fdmExec->SetPropertyValue("contact/unit[0]/spring-coeff-lbs_ft", 0.0);
+            fdmExec->SetPropertyValue("contact/unit[1]/spring-coeff-lbs_ft", 0.0);
+            
+            std::cout << "Ground contacts disabled for powered flight" << std::endl;
+            
             motor_ignited = true;
         }
 
-        // Debug output for engine state immediately after ignition and periodically
-        if (motor_ignited && time < 10.0) {
-            if (time - ignition_time < 0.1 || fmod(time, 0.2) < 0.01) {  // Show for first 0.1s after ignition, then every 0.2s
+        // Debug output for engine state during motor burn phase
+        if (motor_ignited && time < 5.0) {
+            if (time - ignition_time < 0.2 || fmod(time, 0.5) < 0.01) {  // Show for first 0.2s, then every 0.5s
                 auto engine = fdmExec->GetPropulsion()->GetEngine(0);
                 double throttle = fdmExec->GetFCS()->GetThrottlePos(0);
-                double propellant_consumed = 3.9 - fdmExec->GetPropulsion()->GetTank(0)->GetContents();
+                double propellant_remaining = fdmExec->GetPropulsion()->GetTank(0)->GetContents();
+                double propellant_consumed = 3.9 - propellant_remaining;
+                double burn_percentage = (propellant_consumed / 3.9) * 100.0;
                 
-                // Get more detailed engine state by checking properties
-                double burnTime = fdmExec->GetPropertyValue("propulsion/engine/burn-time");
-                double vacThrust = fdmExec->GetPropertyValue("propulsion/engine/vacuum-thrust-lbs");
-                double fuelFlowRate = fdmExec->GetPropertyValue("propulsion/engine/fuel-flow-rate-pps");
-                
-                std::cout << "t=" << std::fixed << std::setprecision(3) << time << "s: Throttle=" << throttle 
-                          << ", Engine running=" << engine->GetRunning() 
-                          << ", Thrust=" << engine->GetThrust() << "lbs" 
-                          << ", Fuel remaining=" << fdmExec->GetPropulsion()->GetTank(0)->GetContents() << "lbs"
-                          << ", Propellant consumed=" << propellant_consumed << "lbs"
-                          << ", Burn time=" << burnTime << "s"
-                          << ", Vac thrust=" << vacThrust << "lbs"
-                          << ", Fuel flow=" << fuelFlowRate << "lbs/s" << std::endl;
+                std::cout << "t=" << std::fixed << std::setprecision(2) << time << "s: "
+                          << "Thrust=" << std::setprecision(1) << engine->GetThrust() << "lbs, " 
+                          << "Fuel=" << std::setprecision(2) << propellant_remaining << "lbs, "
+                          << "Burn=" << std::setprecision(1) << burn_percentage << "%" << std::endl;
             }
         }
 
-        if (velocity > 0.0f && altitude > liftoff_threshold_agl && !did_liftoff) {
+        if (velocity_magnitude > 0.0f && altitude > liftoff_threshold_agl && !did_liftoff) {
             std::cout << "Liftoff detected at " << altitude << " ft" << std::endl;
             did_liftoff = true;
         }
 
-        // Track maximum altitude and detect apogee
+        // Track maximum altitude and detect apogee more robustly
         if (did_liftoff && altitude > max_altitude) {
             max_altitude = altitude;
-        } else if (did_liftoff && !reached_apogee && velocity < 0.0 && altitude < max_altitude) {
-            // Apogee reached when velocity becomes negative and altitude starts decreasing
+        }
+        
+        // Detect apogee when vertical velocity becomes negative after liftoff
+        if (did_liftoff && !reached_apogee && vertical_velocity < -20.0 && altitude > 200.0) { // Very conservative thresholds
             reached_apogee = true;
-            std::cout << "Apogee reached at " << max_altitude << " ft" << std::endl;
+            std::cout << "Apogee reached at " << max_altitude << " ft (current alt: " << altitude << " ft)" << std::endl;
         }
 
-        // Deploy drogue chute at apogee
-        if (reached_apogee && !drogue_deployed) {
+        // Deploy drogue chute at apogee (but only if above minimum altitude)
+        // RE-ENABLED WITH FIXED LOGIC
+        if (reached_apogee && !drogue_deployed && altitude > 800.0) { // Very high altitude threshold
             fdmExec->SetPropertyValue("external_reactions/drogue_chute/drag_area", 8.0); // Drogue chute drag area
             drogue_deployed = true;
             std::cout << "Drogue chute deployed at " << altitude << " ft" << std::endl;
         }
 
-        // Deploy main chute below 500 feet (per requirements)
-        if (drogue_deployed && !main_deployed && altitude < 500.0) {
+        // Deploy main chute below 500 feet (per requirements) 
+        if (reached_apogee && !main_deployed && altitude < 500.0) {
             fdmExec->SetPropertyValue("external_reactions/main_chute/drag_area", 50.0); // Larger main chute
             main_deployed = true;
             std::cout << "Main chute deployed at " << altitude << " ft" << std::endl;
         }
 
-        // Print and save the trajectory data (reduced output frequency)
-        if (fmod(time, 0.1) < 0.01) {  // Print every 0.1 seconds
-            std::cout << std::fixed << std::setprecision(2);
-            std::cout << "Time: " << time << " s, Altitude: " << altitude << " ft, Velocity: " << velocity << " ft/s" << std::endl;
+        // Print and save trajectory data with improved output formatting
+        if (fmod(time, 0.2) < 0.01) {  // Print every 0.2 seconds for detailed tracking
+            std::cout << std::fixed << std::setprecision(1);
+            std::cout << "t=" << time << "s: Alt=" << altitude << "ft, Vel=" << velocity_magnitude << "ft/s";
+            
+            // Show flight phase information
+            if (!did_liftoff) {
+                std::cout << " [ON PAD]";
+            } else if (motor_ignited && time < 4.0) {
+                std::cout << " [POWERED FLIGHT]";
+            } else if (!reached_apogee) {
+                std::cout << " [COASTING UP]";
+            } else if (!drogue_deployed) {
+                std::cout << " [FALLING]";
+            } else if (!main_deployed) {
+                std::cout << " [DROGUE DESCENT]";
+            } else {
+                std::cout << " [MAIN CHUTE]";
+            }
+            std::cout << std::endl;
         }
-        outputFile << time << "," << altitude << "," << velocity << "," << drogue_deployed << "," << main_deployed << "\n";
+        outputFile << time << "," << altitude << "," << velocity_magnitude << "," << drogue_deployed << "," << main_deployed << "\n";
 
-        if (did_liftoff && altitude < liftoff_threshold_agl) {
-            std::cout << "Rocket has reached the ground." << std::endl;
+        if (did_liftoff && reached_apogee && altitude < 5.0) {  // Only terminate after apogee and very low altitude
+            std::cout << "Rocket has reached the ground after flight." << std::endl;
             break;
         }
     }

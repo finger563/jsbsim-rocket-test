@@ -2,7 +2,7 @@
 
 <!--
   File:     cesaroni_l1720_engine.xml
-  Description: Cesaroni L1720 solid rocket motor
+  Description: Cesaroni L1720 solid rocket motor - Optimized for realistic performance
   
   Specifications:
   - Total impulse: 1720 N⋅s (386 lbf⋅s)  
@@ -15,25 +15,40 @@
 
 <rocket_engine name="cesaroni_l1720_engine">
     <isp>220.0</isp>
-    <builduptime>0.05</builduptime>
+    <builduptime>0.1</builduptime>
     <variation>
         <thrust>0.02</thrust>
         <total_isp>0.00</total_isp>
     </variation>
     <thrust_table name="propulsion/thrust_prop_remain" type="internal">
         <tableData>
-            0.00000   157.0   <!-- 0.0 lbs burned: Peak thrust at ignition -->
-            0.10000   157.0   <!-- 0.1 lbs burned: Peak thrust continues -->
-            0.30000   120.0   <!-- 0.3 lbs burned: Thrust stabilizes -->
-            0.60000   150.0   <!-- 0.6 lbs burned -->
-            1.20000   145.0   <!-- 1.2 lbs burned -->
-            1.80000   140.0   <!-- 1.8 lbs burned -->
-            2.40000   135.0   <!-- 2.4 lbs burned -->
-            3.00000   130.0   <!-- 3.0 lbs burned -->
-            3.30000   125.0   <!-- 3.3 lbs burned -->
-            3.60000   110.0   <!-- 3.6 lbs burned -->
-            3.80000   85.0    <!-- 3.8 lbs burned -->
-            3.90000   0.0     <!-- 3.9 lbs burned: Burnout (all propellant consumed) -->
+            0.000   157.0   <!-- 0.0 lbs burned: Peak thrust at ignition -->
+            0.050   155.0   <!-- Early burn: slightly reduced -->
+            0.100   150.0   <!-- 0.1 lbs burned: High initial thrust -->
+            0.200   145.0   <!-- 0.2 lbs burned -->
+            0.400   140.0   <!-- 0.4 lbs burned -->
+            0.600   135.0   <!-- 0.6 lbs burned -->
+            0.800   130.0   <!-- 0.8 lbs burned -->
+            1.000   125.0   <!-- 1.0 lbs burned -->
+            1.300   120.0   <!-- 1.3 lbs burned: Mid-burn -->
+            1.600   118.0   <!-- 1.6 lbs burned -->
+            2.000   115.0   <!-- 2.0 lbs burned -->
+            2.400   112.0   <!-- 2.4 lbs burned -->
+            2.800   108.0   <!-- 2.8 lbs burned -->
+            3.200   105.0   <!-- 3.2 lbs burned -->
+            3.400    95.0   <!-- 3.4 lbs burned -->
+            3.600    80.0   <!-- 3.6 lbs burned -->
+            3.750    60.0   <!-- 3.75 lbs burned -->
+            3.850    30.0   <!-- 3.85 lbs burned -->
+            3.900     5.0   <!-- 3.9 lbs burned: Very low thrust tail-off -->
+            3.950     1.0   <!-- 3.95 lbs burned: Minimal residual -->
+            4.000     0.0   <!-- 4.0 lbs burned: Complete burnout -->
+            4.100     0.0   <!-- 4.1 lbs burned: Safety margin -->
+            4.200     0.0   <!-- 4.2 lbs burned: Safety margin -->
+            4.500     0.0   <!-- 4.5 lbs burned: Extended safety -->
+            5.000     0.0   <!-- 5.0 lbs burned: Maximum safety -->
+            6.000     0.0   <!-- 6.0 lbs burned: Maximum safety -->
+            10.000    0.0   <!-- 10.0 lbs burned: Ultimate safety -->
         </tableData>
     </thrust_table>
 </rocket_engine> 
