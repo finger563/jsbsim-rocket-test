@@ -386,12 +386,13 @@
   <axis name="PITCH">
 
     <function name="aero/moment/Pitch_alpha">
-       <description>Pitch moment due to alpha - fin stability</description>
+       <description>Pitch moment due to alpha - fin stability at tail location</description>
        <product>
            <property>aero/qbar-psf</property>
-           <property>metrics/Sw-sqft</property>
+           <value>0.08</value>  <!-- Fin area in ft² -->
+           <value>3.5</value>   <!-- Fin arm in ft (distance from CG to fins) -->
            <property>aero/alpha-rad</property>
-           <value> -8.0 </value>  <!-- Stronger fins provide more restoring pitch moment -->
+           <value> -1.0 </value>  <!-- Fins provide restoring pitch moment -->
        </product>
     </function>
 
@@ -407,13 +408,14 @@
     </function>
 
     <function name="aero/moment/Pitch_damp">
-       <description>Pitch moment due to pitch rate - fin damping</description>
+       <description>Pitch moment due to pitch rate - fin damping at tail location</description>
        <product>
            <property>aero/qbar-psf</property>
-           <property>metrics/Sw-sqft</property>
+           <value>0.08</value>  <!-- Fin area in ft² -->
+           <value>3.5</value>   <!-- Fin arm in ft -->
            <property>aero/ci2vel</property>
            <property>velocities/q-aero-rad_sec</property>
-           <value> -4.0 </value>  <!-- Stronger fins provide more pitch damping -->
+           <value> -0.5 </value>  <!-- Fin pitch damping -->
        </product>
     </function>
 
@@ -446,13 +448,14 @@
     </function>
 
     <function name="aero/moment/Roll_damp">
-       <description>Roll moment due to roll rate - fin damping</description>
+       <description>Roll moment due to roll rate - fin damping around rocket centerline</description>
        <product>
            <property>aero/qbar-psf</property>
-           <property>metrics/Sw-sqft</property>
+           <value>0.08</value>  <!-- Total fin area in ft² -->
+           <value>0.25</value>  <!-- Fin span from centerline (3" rocket radius) -->
            <property>aero/bi2vel</property>
            <property>velocities/p-aero-rad_sec</property>
-           <value> -0.5 </value>  <!-- Fins provide roll damping -->
+           <value> -0.2 </value>  <!-- Fin roll damping -->
        </product>
     </function>
 
@@ -507,12 +510,13 @@
     </function>
 
     <function name="aero/moment/Yaw_beta">
-       <description>Yaw moment due to beta - fin stability</description>
+       <description>Yaw moment due to beta - fin stability at tail location</description>
        <product>
            <property>aero/qbar-psf</property>
-           <property>metrics/Sw-sqft</property>
+           <value>0.08</value>  <!-- Fin area in ft² -->
+           <value>3.5</value>   <!-- Fin arm in ft (distance from CG to fins) -->
            <property>aero/beta-rad</property>
-           <value> -8.0 </value>  <!-- Stronger fins provide more restoring yaw moment -->
+           <value> -1.0 </value>  <!-- Fins provide restoring yaw moment -->
        </product>
     </function>
 
@@ -529,13 +533,14 @@
     </function>
 
     <function name="aero/moment/Yaw_damp">
-       <description>Yaw moment due to yaw rate - fin damping</description>
+       <description>Yaw moment due to yaw rate - fin damping at tail location</description>
        <product>
            <property>aero/qbar-psf</property>
-           <property>metrics/Sw-sqft</property>
+           <value>0.08</value>  <!-- Fin area in ft² -->
+           <value>3.5</value>   <!-- Fin arm in ft -->
            <property>aero/bi2vel</property>
            <property>velocities/r-aero-rad_sec</property>
-           <value> -4.0 </value>  <!-- Stronger fins provide more yaw damping -->
+           <value> -0.5 </value>  <!-- Fin yaw damping -->
        </product>
     </function>
 

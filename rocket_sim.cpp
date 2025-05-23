@@ -36,7 +36,7 @@ int main() {
     fdmExec->GetIC()->SetAltitudeASLFtIC(10.5);    // Start slightly higher to avoid ground contact
     fdmExec->GetIC()->SetLatitudeDegIC(37.0);
     fdmExec->GetIC()->SetLongitudeDegIC(-122.0);
-    fdmExec->GetIC()->SetThetaDegIC(90.0);         // Nose up orientation (+90 deg pitch) so +X points up
+    fdmExec->GetIC()->SetThetaDegIC(89.95);        // Very slightly off vertical to avoid numerical singularities
     fdmExec->GetIC()->SetPhiDegIC(0.0);            // No roll
     fdmExec->GetIC()->SetPsiDegIC(0.0);            // No yaw
     fdmExec->GetIC()->SetVNorthFpsIC(0.0);
@@ -129,6 +129,17 @@ int main() {
         // Simple velocity debugging during motor burn only
         if (motor_ignited && time < 1.0 && fmod(time, 0.5) < 0.01) {
             std::cout << "DEBUG: Altitude=" << altitude << "ft, Vertical_vel=" << vertical_velocity << "ft/s" << std::endl;
+        }
+
+        // Debug angular orientation during early flight
+        if (time < 5.0 && fmod(time, 0.2) < 0.01) {
+            double pitch_deg = fdmExec->GetPropagate()->GetEuler(2) * 180.0 / 3.14159; // Theta (pitch)
+            double yaw_deg = fdmExec->GetPropagate()->GetEuler(3) * 180.0 / 3.14159;   // Psi (yaw) 
+            double roll_deg = fdmExec->GetPropagate()->GetEuler(1) * 180.0 / 3.14159;  // Phi (roll)
+            
+            std::cout << "ORIENTATION t=" << std::fixed << std::setprecision(2) << time 
+                      << "s: Pitch=" << std::setprecision(1) << pitch_deg 
+                      << "°, Yaw=" << yaw_deg << "°, Roll=" << roll_deg << "°" << std::endl;
         }
 
         // Ignite motor at scheduled time using throttle setting for solid rockets
