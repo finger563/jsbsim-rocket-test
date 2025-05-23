@@ -60,6 +60,19 @@ int main() {
 
     // Initialize the model
     fdmExec->RunIC();
+    
+    // Disable atmospheric turbulence for clean flight test
+    fdmExec->SetPropertyValue("atmosphere/turb-rate", 0.0);
+    fdmExec->SetPropertyValue("atmosphere/turb-gain", 0.0);
+    
+    // Debug: Check current wind conditions
+    std::cout << "\n=== WIND CONDITIONS DEBUG ===" << std::endl;
+    std::cout << "Wind North: " << fdmExec->GetPropertyValue("atmosphere/wind-north-fps") << " fps" << std::endl;
+    std::cout << "Wind East:  " << fdmExec->GetPropertyValue("atmosphere/wind-east-fps") << " fps" << std::endl;
+    std::cout << "Wind Down:  " << fdmExec->GetPropertyValue("atmosphere/wind-down-fps") << " fps" << std::endl;
+    std::cout << "Wind Mag:   " << fdmExec->GetPropertyValue("atmosphere/wind-mag-fps") << " fps" << std::endl;
+    std::cout << "Turb Mag:   " << fdmExec->GetPropertyValue("atmosphere/turb-rate") << " fps" << std::endl;
+    std::cout << "===========================" << std::endl;
 
     // Open an output file to save the trajectory data
     std::ofstream outputFile("rocket_trajectory.csv");
