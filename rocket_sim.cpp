@@ -71,7 +71,9 @@ int main() {
     double total_impulse = 0.0;  // Track total impulse delivered
     double last_time = 0.0;      // For impulse integration
     
-    std::cout << "Starting L1720 rocket simulation - target apogee ~4000 ft" << std::endl;
+    std::cout << "Starting L1720 rocket simulation - real manufacturer thrust curve data" << std::endl;
+    std::cout << "Real L1720: 437.4 lbf peak thrust, 2.1s burn, regressive profile" << std::endl;
+    std::cout << "Expected apogee from manufacturer: 3812 ft" << std::endl;
     std::cout << "Motor ignition scheduled for t=" << ignition_time << " seconds" << std::endl;
 
     float liftoff_threshold_agl = 10.0f;
@@ -138,7 +140,7 @@ int main() {
         }
 
         // Debug output for engine state during motor burn phase
-        if (motor_ignited && time < 5.0) {
+        if (motor_ignited && time < 3.0) {  // Shortened from 5.0s to cover the 2.1s burn + coast
             if (time - ignition_time < 0.2 || fmod(time, 0.5) < 0.01) {  // Show for first 0.2s, then every 0.5s
                 auto engine = fdmExec->GetPropulsion()->GetEngine(0);
                 double throttle = fdmExec->GetFCS()->GetThrottlePos(0);
@@ -176,7 +178,7 @@ int main() {
             double propellant_remaining = fdmExec->GetPropulsion()->GetTank(0)->GetContents();
             double burn_time = time - ignition_time;
             
-            if (propellant_remaining < 0.1 || burn_time > 3.5) {  // Shut down when fuel low or after 3.5s
+            if (propellant_remaining < 0.1 || burn_time > 2.2) {  // Shut down when fuel low or after 2.2s (real L1720 burn time)
                 auto engine = fdmExec->GetPropulsion()->GetEngine(0);
                 engine->SetRunning(false);
                 fdmExec->GetFCS()->SetThrottleCmd(0, 0.0);
@@ -187,7 +189,7 @@ int main() {
                 engine_shutdown = true;
                 std::cout << "Engine shutdown at t=" << time << "s (fuel=" << propellant_remaining 
                           << "lbs, burn_time=" << burn_time << "s)" << std::endl;
-                std::cout << "TOTAL IMPULSE DELIVERED: " << total_impulse << " lbf⋅s (expected: 386 lbf⋅s)" << std::endl;
+                std::cout << "TOTAL IMPULSE DELIVERED: " << total_impulse << " lbf⋅s (expected: 822 lbf⋅s)" << std::endl;
             }
         }
 

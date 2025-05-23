@@ -124,7 +124,7 @@
    <ixx unit="SLUG*FT2">  0.02    </ixx>  <!-- Roll inertia for 6" diameter rocket (much smaller) -->
    <iyy unit="SLUG*FT2">  1.8     </iyy>   <!-- Pitch/Yaw inertia for 109" rocket (much smaller) -->
    <izz unit="SLUG*FT2">  1.8     </izz>   <!-- Pitch/Yaw inertia for 109" rocket (much smaller) -->
-   <emptywt unit="LBS" >  43.00    </emptywt>  <!-- From specs -->
+   <emptywt unit="LBS" >  43.0 </emptywt>  <!-- Restored to original spec (was 35.0) -->
    <location name="CG" unit="FT">  <!-- Center of Gravity at 54.9" -->
      <x> 4.575     </x>
      <y> 0.00     </y>
@@ -252,7 +252,7 @@
        <product>
           <property>aero/qbar-psf</property>
           <property>metrics/Sw-sqft</property>
-          <value> 0.01 </value>  <!-- Extremely low CD for testing (was 0.06) -->
+          <value> 0.003 </value>  <!-- Extremely low CD for very streamlined rocket (was 0.01) -->
        </product>
     </function>
 
