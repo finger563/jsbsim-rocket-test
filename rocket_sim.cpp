@@ -61,18 +61,21 @@ int main() {
     // Initialize the model
     fdmExec->RunIC();
     
-    // Disable atmospheric turbulence for clean flight test
-    fdmExec->SetPropertyValue("atmosphere/turb-rate", 0.0);
-    fdmExec->SetPropertyValue("atmosphere/turb-gain", 0.0);
+    // Enable realistic atmospheric turbulence and wind for final testing
+    fdmExec->SetPropertyValue("atmosphere/turb-rate", 0.1);      // Moderate turbulence
+    fdmExec->SetPropertyValue("atmosphere/turb-gain", 1.0);      // Normal gain
+    fdmExec->SetPropertyValue("atmosphere/wind-north-fps", 7.33); // 5 mph north wind (7.33 ft/s)
+    fdmExec->SetPropertyValue("atmosphere/wind-east-fps", 0.0);   // No east wind
+    fdmExec->SetPropertyValue("atmosphere/wind-down-fps", 0.0);   // No vertical wind
     
     // Debug: Check current wind conditions
-    std::cout << "\n=== WIND CONDITIONS DEBUG ===" << std::endl;
-    std::cout << "Wind North: " << fdmExec->GetPropertyValue("atmosphere/wind-north-fps") << " fps" << std::endl;
+    std::cout << "\n=== REALISTIC ATMOSPHERIC CONDITIONS ===" << std::endl;
+    std::cout << "Wind North: " << fdmExec->GetPropertyValue("atmosphere/wind-north-fps") << " fps (5 mph)" << std::endl;
     std::cout << "Wind East:  " << fdmExec->GetPropertyValue("atmosphere/wind-east-fps") << " fps" << std::endl;
     std::cout << "Wind Down:  " << fdmExec->GetPropertyValue("atmosphere/wind-down-fps") << " fps" << std::endl;
     std::cout << "Wind Mag:   " << fdmExec->GetPropertyValue("atmosphere/wind-mag-fps") << " fps" << std::endl;
-    std::cout << "Turb Mag:   " << fdmExec->GetPropertyValue("atmosphere/turb-rate") << " fps" << std::endl;
-    std::cout << "===========================" << std::endl;
+    std::cout << "Turb Rate:  " << fdmExec->GetPropertyValue("atmosphere/turb-rate") << std::endl;
+    std::cout << "=========================================" << std::endl;
 
     // Open an output file to save the trajectory data
     std::ofstream outputFile("rocket_trajectory.csv");
