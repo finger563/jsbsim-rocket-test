@@ -32,13 +32,13 @@ int main() {
         return 1;
     }
 
-    // Set initial conditions for vertical launch - CORRECTED ORIENTATION
+    // Set initial conditions for launch into wind - REALISTIC LAUNCH TECHNIQUE (CORRECTED)
     fdmExec->GetIC()->SetAltitudeASLFtIC(10.5);    // Start slightly higher to avoid ground contact
     fdmExec->GetIC()->SetLatitudeDegIC(37.0);
     fdmExec->GetIC()->SetLongitudeDegIC(-122.0);
-    fdmExec->GetIC()->SetThetaDegIC(89.95);        // Very slightly off vertical to avoid numerical singularities
+    fdmExec->GetIC()->SetThetaDegIC(85.0);         // 5° forward tilt (85° = 90° - 5°)
     fdmExec->GetIC()->SetPhiDegIC(0.0);            // No roll
-    fdmExec->GetIC()->SetPsiDegIC(0.0);            // No yaw
+    fdmExec->GetIC()->SetPsiDegIC(180.0);          // Point south (into north wind)
     fdmExec->GetIC()->SetVNorthFpsIC(0.0);
     fdmExec->GetIC()->SetVEastFpsIC(0.0);
     fdmExec->GetIC()->SetVDownFpsIC(0.0);          // No initial velocity
