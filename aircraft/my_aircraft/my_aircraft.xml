@@ -660,16 +660,16 @@
 
  <ground_reactions>
     <contact type="BOGEY" name="LANDING_CONTACT">
-        <location unit="FT">  <!-- Single contact point positioned very far below -->
-            <x>4.5</x>  <!-- Center of rocket -->
+        <location unit="FT">  <!-- Contact point at rocket nozzle (bottom end) -->
+            <x>9.08</x>  <!-- At nozzle end (109" from nose) -->
             <y>0.0</y>
-            <z>-100.0</z>  <!-- 100 ft below rocket centerline -->
+            <z>0.25</z>   <!-- At bottom surface of rocket (3" radius = 0.25 ft down from centerline) -->
         </location>
         <static_friction>0.8</static_friction>
         <dynamic_friction>0.7</dynamic_friction>
         <rolling_friction>0.01</rolling_friction>
-        <spring_coeff unit="LBS/FT">0.1</spring_coeff>  <!-- Very weak spring -->
-        <damping_coeff unit="LBS/FT/SEC">0.1</damping_coeff>  <!-- Very weak damping -->
+        <spring_coeff unit="LBS/FT">0.01</spring_coeff>  <!-- Very weak spring to minimize false triggers -->
+        <damping_coeff unit="LBS/FT/SEC">0.01</damping_coeff>  <!-- Very weak damping -->
         <max_steer unit="DEG">0.0</max_steer>
         <brake_group>NONE</brake_group>
     </contact>
