@@ -29,7 +29,7 @@ def plot_rocket_trajectory(csv_file='rocket_trajectory.csv'):
     y_ft = [float(row['Y_ft']) for row in data]
     z_ft = [float(row['Z_ft']) for row in data]
     altitude = [float(row['Altitude']) for row in data]
-    velocity = [float(row['Velocity']) for row in data]
+    vertical_velocity = [float(row['Vertical_Velocity']) for row in data]
     drogue = [int(row['Drogue_Deployed']) for row in data]
     main = [int(row['Main_Deployed']) for row in data]
     
@@ -83,7 +83,7 @@ def plot_rocket_trajectory(csv_file='rocket_trajectory.csv'):
     
     # Velocity vs Time
     ax3 = fig.add_subplot(223)
-    ax3.plot(time, velocity, 'g-', linewidth=2)
+    ax3.plot(time, vertical_velocity, 'g-', linewidth=2)
     ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('Velocity [ft/s]')
     ax3.set_title('Velocity vs Time')
@@ -104,7 +104,7 @@ def plot_rocket_trajectory(csv_file='rocket_trajectory.csv'):
     print(f"\n=== FLIGHT STATISTICS ===")
     print(f"Max Altitude: {max(z_ft):.1f} ft")
     print(f"Flight Time: {time[-1]:.1f} s")
-    print(f"Max Velocity: {max(velocity):.1f} ft/s")
+    print(f"Max Velocity: {max(vertical_velocity):.1f} ft/s")
     print(f"Horizontal Drift: {horizontal_dist[-1]:.1f} ft")
     
     if drogue_time:

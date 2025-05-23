@@ -95,16 +95,16 @@
 -->
 
  <metrics>
-   <wingarea  unit="FT2"> 0.196     </wingarea>  <!-- Pi * (0.25)^2 for 6" diameter -->
-   <wingspan  unit="FT" > 0.50     </wingspan>   <!-- Minimal fins -->
+   <wingarea  unit="FT2"> 0.196     </wingarea>  <!-- Pi * (0.25)^2 for 6" diameter rocket body -->
+   <wingspan  unit="FT" > 0.0      </wingspan>   <!-- No wings on rocket -->
    <wing_incidence unit="DEG"> 0.00 </wing_incidence>
-   <chord     unit="FT" > 0.09     </chord>
-   <htailarea unit="FT2"> 0.04     </htailarea>
-   <htailarm  unit="FT" > 4.68     </htailarm>
-   <vtailarea  unit="FT2">0.03     </vtailarea>
-   <vtailarm  unit="FT" > 4.50     </vtailarm>
-   <location name="AERORP" unit="FT">  <!-- Center of Pressure at 68.1" -->
-     <x> 5.675     </x>
+   <chord     unit="FT" > 0.0      </chord>      <!-- No wing chord -->
+   <htailarea unit="FT2"> 0.0      </htailarea>  <!-- No horizontal tail -->
+   <htailarm  unit="FT" > 0.0      </htailarm>   <!-- No tail arm -->
+   <vtailarea  unit="FT2">0.08     </vtailarea>  <!-- Total fin area: 4 fins × 0.02 ft² each -->
+   <vtailarm  unit="FT" > 3.5      </vtailarm>   <!-- Fin arm: 95" - 54.9" = 40.1" = 3.34 ft -->
+   <location name="AERORP" unit="FT">  <!-- Center of Pressure at 68.1" from diagram -->
+     <x> 5.675     </x>  <!-- 68.1" = 5.675 ft from nose -->
      <y> 0.00     </y>
      <z> 0.00     </z>
    </location>
@@ -196,13 +196,13 @@
             <independentVar lookup="row">aero/alpha-rad</independentVar>
             <tableData>
               -1.57  0.0000
-              -1.22 -0.1000  <!-- Much lower lift for rocket -->
-              -1.05 -0.1500  
-              -0.88 -0.2000  
-               0.00  0.0100  <!-- Minimal lift at zero alpha -->
-               0.88  0.2000  
-               1.05  0.1500  
-               1.22  0.1000  
+              -1.22  0.0000  <!-- No lift for rocket body -->
+              -1.05  0.0000  
+              -0.88  0.0000  
+               0.00  0.0000  <!-- Zero lift at zero alpha -->
+               0.88  0.0000  
+               1.05  0.0000  
+               1.22  0.0000  
                1.57  0.0000
             </tableData>
           </table>
@@ -216,7 +216,7 @@
           <property>metrics/Sw-sqft</property>
           <property>velocities/q-aero-rad_sec</property>
           <property>aero/ci2vel</property>
-          <value> -2.0 </value>  <!-- Much smaller for rocket (was -20.0) -->
+          <value> 0.0 </value>  <!-- No lift due to pitch rate for rocket -->
         </product>
       </function>
 
@@ -227,7 +227,7 @@
            <property>metrics/Sw-sqft</property>
            <property>aero/alphadot-rad_sec</property>
            <property>aero/ci2vel</property>
-           <value> -1.0 </value>  <!-- Much smaller for rocket (was -10.0) -->
+           <value> 0.0 </value>  <!-- No lift due to alpha rate for rocket -->
         </product>
       </function>
 
@@ -237,7 +237,7 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <property>fcs/elevator-pos-rad</property>
-           <value> 0.05 </value>  <!-- Much smaller for rocket fins -->
+           <value> 0.0 </value>  <!-- No elevators on rocket -->
        </product>
     </function>
 
@@ -252,7 +252,7 @@
        <product>
           <property>aero/qbar-psf</property>
           <property>metrics/Sw-sqft</property>
-          <value> 0.003 </value>  <!-- Extremely low CD for very streamlined rocket (was 0.01) -->
+          <value> 0.38 </value>  <!-- Lower end of CFD range 0.38-0.47 for actual performance -->
        </product>
     </function>
 
@@ -264,9 +264,9 @@
           <table>
             <independentVar lookup="row">aero/alpha-rad</independentVar>
             <tableData>
-             -1.57    0.5000  <!-- Much lower drag at high angles for rocket -->
+             -1.57    0.1500  <!-- Much lower drag at high angles for streamlined rocket -->
               0.00    0.0000
-              1.57    0.5000  <!-- Much lower drag at high angles for rocket -->
+              1.57    0.1500  <!-- Much lower drag at high angles for streamlined rocket -->
             </tableData>
           </table>
        </product>
@@ -278,7 +278,7 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <property>aero/cl-squared</property>
-           <value> 0.001 </value>  <!-- Minimal induced drag for rocket (was 0.0072) -->
+           <value> 0.0001 </value>  <!-- Essentially zero induced drag for rocket -->
          </product>
     </function>
 
@@ -292,8 +292,8 @@
             <tableData>
                 0.00    0.0000
                 0.70    0.0000
-                1.10    0.015   <!-- Much lower transonic drag for rocket -->
-                1.80    0.008   <!-- Much lower supersonic drag for rocket -->
+                1.10    0.005   <!-- Lower transonic drag for streamlined rocket -->
+                1.80    0.002   <!-- Lower supersonic drag for streamlined rocket -->
             </tableData>
           </table>
         </product>
@@ -307,11 +307,11 @@
           <table>
             <independentVar lookup="row">aero/beta-rad</independentVar>
             <tableData>
-              -1.57    0.2000  <!-- Much lower sideslip drag for rocket -->
-              -0.26    0.0100  
+              -1.57    0.0500  <!-- Much lower sideslip drag for streamlined rocket -->
+              -0.26    0.0050  
                0.00    0.0000
-               0.26    0.0100  
-               1.57    0.2000  <!-- Much lower sideslip drag for rocket -->
+               0.26    0.0050  
+               1.57    0.0500  <!-- Much lower sideslip drag for streamlined rocket -->
             </tableData>
           </table>
        </product>
@@ -323,7 +323,16 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <abs><property>fcs/elevator-pos-rad</property></abs>
-           <value> 0.005 </value>  <!-- Minimal fin deflection drag for rocket -->
+           <value> 0.001 </value>  <!-- Very minimal fin deflection drag for rocket -->
+       </product>
+    </function>
+
+    <function name="aero/force/Drag_fins">
+       <description>Drag due to fins</description>
+       <product>
+           <property>aero/qbar-psf</property>
+           <property>metrics/Sw-sqft</property>
+           <value> 0.008 </value>  <!-- Small fin drag coefficient (0.08 ft² fins / 0.196 ft² reference = 0.41 ratio × 0.02 CD) -->
        </product>
     </function>
 
@@ -337,7 +346,7 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <property>aero/beta-rad</property>
-           <value> 5.0 </value>  <!-- Much smaller for small rocket -->
+           <value> 0.0 </value>  <!-- No side force for rocket body -->
        </product>
     </function>
     <function name="aero/force/Side_roll_rate">
@@ -347,15 +356,7 @@
            <property>metrics/Sw-sqft</property>
            <property>aero/bi2vel</property>
            <property>velocities/p-aero-rad_sec</property>
-           <table>
-             <independentVar lookup="row">aero/Re</independentVar>
-             <tableData>
-                  777770     -2.6844
-                  855547     -0.2287
-                 1166655     -0.1016
-                 2177756     -0.0292
-             </tableData>
-           </table>
+           <value> 0.0 </value>  <!-- No side force due to roll rate for rocket -->
        </product>
     </function>
 
@@ -366,7 +367,7 @@
            <property>metrics/Sw-sqft</property>
            <property>aero/bi2vel</property>
            <property>velocities/r-aero-rad_sec</property>
-           <value> -10.0 </value>  <!-- Much smaller for small rocket -->
+           <value> 0.0 </value>  <!-- No side force due to yaw rate for rocket -->
        </product>
     </function>
 
@@ -376,7 +377,7 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <property>fcs/rudder-pos-rad</property>
-           <value> 0.1407 </value>
+           <value> 0.0 </value>  <!-- No rudder on rocket -->
        </product>
     </function>
 
@@ -385,13 +386,12 @@
   <axis name="PITCH">
 
     <function name="aero/moment/Pitch_alpha">
-       <description>Pitch moment due to alpha - rocket stability</description>
+       <description>Pitch moment due to alpha - fin stability</description>
        <product>
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
-           <property>metrics/cbarw-ft</property>
            <property>aero/alpha-rad</property>
-           <value> -2.5 </value>  <!-- More stable due to fins and CP aft of CG -->
+           <value> -8.0 </value>  <!-- Stronger fins provide more restoring pitch moment -->
        </product>
     </function>
 
@@ -402,25 +402,18 @@
           <property>metrics/Sw-sqft</property>
           <property>metrics/cbarw-ft</property>
           <property>fcs/elevator-pos-rad</property>
-          <table>
-            <independentVar lookup="row">velocities/mach</independentVar>
-            <tableData>
-              0.0    -1.1000
-              2.0    -0.2750
-            </tableData>
-          </table>
+          <value> 0.0 </value>  <!-- No elevator on rocket -->
        </product>
     </function>
 
     <function name="aero/moment/Pitch_damp">
-       <description>Pitch moment due to pitch rate</description>
+       <description>Pitch moment due to pitch rate - fin damping</description>
        <product>
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
-           <property>metrics/cbarw-ft</property>
            <property>aero/ci2vel</property>
            <property>velocities/q-aero-rad_sec</property>
-           <value> -1.0 </value>  <!-- Much smaller for rocket (was -12.0) -->
+           <value> -4.0 </value>  <!-- Stronger fins provide more pitch damping -->
        </product>
     </function>
 
@@ -432,7 +425,7 @@
            <property>metrics/cbarw-ft</property>
            <property>aero/ci2vel</property>
            <property>aero/alphadot-rad_sec</property>
-           <value> -0.5 </value>  <!-- Much smaller for rocket (was -7.0) -->
+           <value> 0.0 </value>  <!-- No pitch moment due to alpha rate for rocket -->
        </product>
     </function>
 
@@ -448,27 +441,18 @@
            <property>metrics/bw-ft</property>
            <property>aero/beta-rad</property>
            <property>fcs/gear-no-wow</property>
-           <table>
-             <independentVar lookup="row">aero/alpha-rad</independentVar>
-             <independentVar lookup="column">aero/Re</independentVar>
-             <tableData>
-                              777770      855547     1166655     2177756
-                 -0.0349    -0.1000     -0.1000     -0.1000     -0.1000
-                  0.3491    -0.1000     -0.1000     -0.1000     -0.1000
-             </tableData>
-           </table>
+           <value> 0.0 </value>  <!-- No roll moment for rocket body -->
        </product>
     </function>
 
     <function name="aero/moment/Roll_damp">
-       <description>Roll moment due to roll rate</description>
+       <description>Roll moment due to roll rate - fin damping</description>
        <product>
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
-           <property>metrics/bw-ft</property>
            <property>aero/bi2vel</property>
            <property>velocities/p-aero-rad_sec</property>
-           <value> -0.5 </value>  <!-- Much smaller for rocket (was -87.1016) -->
+           <value> -0.5 </value>  <!-- Fins provide roll damping -->
        </product>
     </function>
 
@@ -480,15 +464,7 @@
            <property>metrics/bw-ft</property>
            <property>aero/bi2vel</property>
            <property>velocities/r-aero-rad_sec</property>
-           <table>
-             <independentVar lookup="row">aero/alpha-rad</independentVar>
-             <independentVar lookup="column">aero/Re</independentVar>
-             <tableData>
-                              777770      855547     1166655     2177756
-                 -0.0349     0.1000      0.1000      0.1000      0.1000
-                  0.3491     0.1000      0.1000      0.1000      0.1000
-             </tableData>
-           </table>
+           <value> 0.0 </value>  <!-- No roll moment due to yaw rate for rocket -->
        </product>
     </function>
 
@@ -499,13 +475,7 @@
           <property>metrics/Sw-sqft</property>
           <property>metrics/bw-ft</property>
           <property>fcs/left-aileron-pos-rad</property>
-           <table>
-            <independentVar lookup="row">velocities/mach</independentVar>
-            <tableData>
-              0.0    0.1700
-              2.0    0.0425
-            </tableData>
-          </table>
+          <value> 0.0 </value>  <!-- No ailerons on rocket -->
        </product>
     </function>
 
@@ -516,7 +486,7 @@
            <property>metrics/Sw-sqft</property>
            <property>metrics/bw-ft</property>
            <property>fcs/rudder-pos-rad</property>
-           <value> 0.0100 </value>
+           <value> 0.0 </value>  <!-- No rudder on rocket -->
        </product>
     </function>
 
@@ -524,7 +494,6 @@
 
   <axis name="YAW">
 
-    <!-- Stall initiator -->
     <function name="aero/moment/Yaw_alpha">
        <description>Yaw moment due to alpha</description>
        <product>
@@ -533,26 +502,17 @@
            <property>metrics/bw-ft</property>
            <property>aero/alpha-rad</property>
            <property>fcs/gear-no-wow</property>
-           <table>
-             <independentVar lookup="row">aero/beta-rad</independentVar>
-             <independentVar lookup="column">aero/Re</independentVar>
-             <tableData>
-                              777770      855547
-                 -0.3491     -1.0000      0.0000
-                  0.3491      1.0000      0.0000
-             </tableData>
-           </table>
+           <value> 0.0 </value>  <!-- No yaw moment due to alpha for rocket -->
        </product>
     </function>
 
     <function name="aero/moment/Yaw_beta">
-       <description>Yaw moment due to beta</description>
+       <description>Yaw moment due to beta - fin stability</description>
        <product>
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
-           <property>metrics/bw-ft</property>
            <property>aero/beta-rad</property>
-           <value> -5.0 </value>  <!-- Much smaller for small rocket -->
+           <value> -8.0 </value>  <!-- Stronger fins provide more restoring yaw moment -->
        </product>
     </function>
 
@@ -564,27 +524,18 @@
            <property>metrics/bw-ft</property>
            <property>aero/bi2vel</property>
            <property>velocities/p-rad_sec</property>
-           <table>
-             <independentVar lookup="row">aero/Re</independentVar>
-             <tableData>
-                  777770     0.1000   <!-- Much smaller for rocket (was 24.1594) -->
-                  855547     0.1000   <!-- Much smaller for rocket (was 2.0584) -->
-                 1166655     0.1000   <!-- Much smaller for rocket (was 0.9148) -->
-                 2177756     0.1000   <!-- Much smaller for rocket (was 0.2625) -->
-             </tableData>
-           </table>
+           <value> 0.0 </value>  <!-- No yaw moment due to roll rate for rocket -->
        </product>
     </function>
 
     <function name="aero/moment/Yaw_damp">
-       <description>Yaw moment due to yaw rate</description>
+       <description>Yaw moment due to yaw rate - fin damping</description>
        <product>
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
-           <property>metrics/bw-ft</property>
            <property>aero/bi2vel</property>
            <property>velocities/r-aero-rad_sec</property>
-           <value> -0.5 </value>  <!-- Much smaller for rocket (was -15.0) -->
+           <value> -4.0 </value>  <!-- Stronger fins provide more yaw damping -->
        </product>
     </function>
 
@@ -595,7 +546,7 @@
            <property>metrics/Sw-sqft</property>
            <property>metrics/bw-ft</property>
            <property>fcs/rudder-pos-rad</property>
-           <value> -1.2659 </value>
+           <value> 0.0 </value>  <!-- No rudder on rocket -->
        </product>
     </function>
 
@@ -606,7 +557,7 @@
            <property>metrics/Sw-sqft</property>
            <property>metrics/bw-ft</property>
            <property>fcs/left-aileron-pos-rad</property>
-           <value> -0.0100 </value>
+           <value> 0.0 </value>  <!-- No ailerons on rocket -->
        </product>
     </function>
 

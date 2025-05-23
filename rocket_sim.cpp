@@ -76,7 +76,7 @@ int main() {
 
     // Open an output file to save the trajectory data
     std::ofstream outputFile("rocket_trajectory.csv");
-    outputFile << "Time,X_ft,Y_ft,Z_ft,Altitude,Velocity,Drogue_Deployed,Main_Deployed\n";
+    outputFile << "Time,X_ft,Y_ft,Z_ft,Altitude,Vertical_Velocity,Drogue_Deployed,Main_Deployed\n";
 
     // Initialize motor ignition sequence
     bool motor_ignited = false;
@@ -274,7 +274,7 @@ int main() {
         double y_pos = (current_lon - initial_longitude) * 364000.0 * cos(initial_latitude * 3.14159265359 / 180.0);  // East-West in feet
         double z_pos = current_alt - initial_altitude;  // Height above launch point in feet
         
-        outputFile << time << "," << x_pos << "," << y_pos << "," << z_pos << "," << altitude << "," << velocity_magnitude << "," << drogue_deployed << "," << main_deployed << "\n";
+        outputFile << time << "," << x_pos << "," << y_pos << "," << z_pos << "," << altitude << "," << vertical_velocity << "," << drogue_deployed << "," << main_deployed << "\n";
 
         if (did_liftoff && reached_apogee && altitude < 5.0) {  // Only terminate after apogee and very low altitude
             std::cout << "Rocket has reached the ground after flight." << std::endl;
