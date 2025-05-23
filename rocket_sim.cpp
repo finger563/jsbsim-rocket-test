@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <memory>
 #include <cmath>
+#define _USE_MATH_DEFINES
 #include <FGFDMExec.h>
 #include <initialization/FGInitialCondition.h>
 #include <models/FGInertial.h>
@@ -62,7 +63,7 @@ int main() {
 
     // Open an output file to save the trajectory data
     std::ofstream outputFile("rocket_trajectory.csv");
-    outputFile << "Time,Altitude,Velocity,Drogue_Deployed,Main_Deployed\n";
+    outputFile << "Time,X_ft,Y_ft,Z_ft,Altitude,Velocity,Drogue_Deployed,Main_Deployed\n";
 
     // Initialize motor ignition sequence
     bool motor_ignited = false;
@@ -70,6 +71,11 @@ int main() {
     double ignition_time = 0.05; // Quick ignition after simulation start
     double total_impulse = 0.0;  // Track total impulse delivered
     double last_time = 0.0;      // For impulse integration
+    
+    // Store initial position for 3D trajectory tracking
+    double initial_latitude = 37.0;  // Launch latitude
+    double initial_longitude = -122.0; // Launch longitude
+    double initial_altitude = 10.5;   // Launch altitude
     
     std::cout << "Starting L1720 rocket simulation - real manufacturer thrust curve data" << std::endl;
     std::cout << "Real L1720: 437.4 lbf peak thrust, 2.1s burn, regressive profile" << std::endl;
@@ -209,10 +215,8 @@ int main() {
             std::cout << "Apogee reached at " << max_altitude << " ft (current alt: " << altitude << " ft)" << std::endl;
         }
 
-        // Deploy drogue chute at apogee (but only if above minimum altitude)
-        // RE-ENABLED WITH FIXED LOGIC
-        /*
-        if (reached_apogee && !drogue_deployed && altitude > 800.0) { // Very high altitude threshold
+        // Deploy drogue chute at apogee
+        if (reached_apogee && !drogue_deployed) {
             fdmExec->SetPropertyValue("external_reactions/drogue_chute/drag_area", 8.0); // Drogue chute drag area
             drogue_deployed = true;
             std::cout << "Drogue chute deployed at " << altitude << " ft" << std::endl;
@@ -224,7 +228,6 @@ int main() {
             main_deployed = true;
             std::cout << "Main chute deployed at " << altitude << " ft" << std::endl;
         }
-        */
 
         // Print and save trajectory data with improved output formatting
         if (fmod(time, 0.2) < 0.01) {  // Print every 0.2 seconds for detailed tracking
@@ -247,7 +250,18 @@ int main() {
             }
             std::cout << std::endl;
         }
-        outputFile << time << "," << altitude << "," << velocity_magnitude << "," << drogue_deployed << "," << main_deployed << "\n";
+        
+        // Calculate 3D position relative to launch point
+        double current_lat = fdmExec->GetPropagate()->GetLocation().GetLatitudeDeg();
+        double current_lon = fdmExec->GetPropagate()->GetLocation().GetLongitudeDeg();
+        double current_alt = fdmExec->GetPropagate()->GetAltitudeASL();
+        
+        // Convert to local coordinates in feet (X=North, Y=East, Z=Up)
+        double x_pos = (current_lat - initial_latitude) * 364000.0;  // North-South in feet
+        double y_pos = (current_lon - initial_longitude) * 364000.0 * cos(initial_latitude * 3.14159265359 / 180.0);  // East-West in feet
+        double z_pos = current_alt - initial_altitude;  // Height above launch point in feet
+        
+        outputFile << time << "," << x_pos << "," << y_pos << "," << z_pos << "," << altitude << "," << velocity_magnitude << "," << drogue_deployed << "," << main_deployed << "\n";
 
         if (did_liftoff && reached_apogee && altitude < 5.0) {  // Only terminate after apogee and very low altitude
             std::cout << "Rocket has reached the ground after flight." << std::endl;
