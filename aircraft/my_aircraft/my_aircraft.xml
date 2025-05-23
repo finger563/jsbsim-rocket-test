@@ -196,13 +196,13 @@
             <independentVar lookup="row">aero/alpha-rad</independentVar>
             <tableData>
               -1.57  0.0000
-              -1.22 -0.6427
-              -1.05 -0.8659
-              -0.88 -0.9999
-               0.00  0.0878
-               0.88  1.0001
-               1.05  0.8661
-               1.22  0.6429
+              -1.22 -0.1000  <!-- Much lower lift for rocket -->
+              -1.05 -0.1500  
+              -0.88 -0.2000  
+               0.00  0.0100  <!-- Minimal lift at zero alpha -->
+               0.88  0.2000  
+               1.05  0.1500  
+               1.22  0.1000  
                1.57  0.0000
             </tableData>
           </table>
@@ -216,7 +216,7 @@
           <property>metrics/Sw-sqft</property>
           <property>velocities/q-aero-rad_sec</property>
           <property>aero/ci2vel</property>
-          <value> -20.0 </value>  <!-- Much smaller for small rocket -->
+          <value> -2.0 </value>  <!-- Much smaller for rocket (was -20.0) -->
         </product>
       </function>
 
@@ -227,7 +227,7 @@
            <property>metrics/Sw-sqft</property>
            <property>aero/alphadot-rad_sec</property>
            <property>aero/ci2vel</property>
-           <value> -10.0 </value>  <!-- Much smaller for small rocket -->
+           <value> -1.0 </value>  <!-- Much smaller for rocket (was -10.0) -->
         </product>
       </function>
 
@@ -237,7 +237,7 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <property>fcs/elevator-pos-rad</property>
-           <value> 0.4291 </value>
+           <value> 0.05 </value>  <!-- Much smaller for rocket fins -->
        </product>
     </function>
 
@@ -252,7 +252,7 @@
        <product>
           <property>aero/qbar-psf</property>
           <property>metrics/Sw-sqft</property>
-          <value> 0.15 </value>  <!-- Lower CD for streamlined small rocket -->
+          <value> 0.01 </value>  <!-- Extremely low CD for testing (was 0.06) -->
        </product>
     </function>
 
@@ -264,9 +264,9 @@
           <table>
             <independentVar lookup="row">aero/alpha-rad</independentVar>
             <tableData>
-             -1.57    2.3091
+             -1.57    0.5000  <!-- Much lower drag at high angles for rocket -->
               0.00    0.0000
-              1.57    2.3091
+              1.57    0.5000  <!-- Much lower drag at high angles for rocket -->
             </tableData>
           </table>
        </product>
@@ -278,7 +278,7 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <property>aero/cl-squared</property>
-           <value> 0.0072 </value>
+           <value> 0.001 </value>  <!-- Minimal induced drag for rocket (was 0.0072) -->
          </product>
     </function>
 
@@ -292,8 +292,8 @@
             <tableData>
                 0.00    0.0000
                 0.70    0.0000
-                1.10    0.0230
-                1.80    0.0150
+                1.10    0.015   <!-- Much lower transonic drag for rocket -->
+                1.80    0.008   <!-- Much lower supersonic drag for rocket -->
             </tableData>
           </table>
         </product>
@@ -307,11 +307,11 @@
           <table>
             <independentVar lookup="row">aero/beta-rad</independentVar>
             <tableData>
-              -1.57    1.2300
-              -0.26    0.0500
+              -1.57    0.2000  <!-- Much lower sideslip drag for rocket -->
+              -0.26    0.0100  
                0.00    0.0000
-               0.26    0.0500
-               1.57    1.2300
+               0.26    0.0100  
+               1.57    0.2000  <!-- Much lower sideslip drag for rocket -->
             </tableData>
           </table>
        </product>
@@ -323,7 +323,7 @@
            <property>aero/qbar-psf</property>
            <property>metrics/Sw-sqft</property>
            <abs><property>fcs/elevator-pos-rad</property></abs>
-           <value> 0.0400 </value>
+           <value> 0.005 </value>  <!-- Minimal fin deflection drag for rocket -->
        </product>
     </function>
 
@@ -420,7 +420,7 @@
            <property>metrics/cbarw-ft</property>
            <property>aero/ci2vel</property>
            <property>velocities/q-aero-rad_sec</property>
-           <value> -12.0000 </value>
+           <value> -1.0 </value>  <!-- Much smaller for rocket (was -12.0) -->
        </product>
     </function>
 
@@ -432,7 +432,7 @@
            <property>metrics/cbarw-ft</property>
            <property>aero/ci2vel</property>
            <property>aero/alphadot-rad_sec</property>
-           <value> -7.0000 </value>
+           <value> -0.5 </value>  <!-- Much smaller for rocket (was -7.0) -->
        </product>
     </function>
 
@@ -453,8 +453,8 @@
              <independentVar lookup="column">aero/Re</independentVar>
              <tableData>
                               777770      855547     1166655     2177756
-                 -0.0349   -101.3313   -101.3144   -101.3135   -101.3130
-                  0.3491   -101.3313   -101.3144   -101.3135   -101.3130
+                 -0.0349    -0.1000     -0.1000     -0.1000     -0.1000
+                  0.3491    -0.1000     -0.1000     -0.1000     -0.1000
              </tableData>
            </table>
        </product>
@@ -468,7 +468,7 @@
            <property>metrics/bw-ft</property>
            <property>aero/bi2vel</property>
            <property>velocities/p-aero-rad_sec</property>
-           <value> -87.1016 </value>
+           <value> -0.5 </value>  <!-- Much smaller for rocket (was -87.1016) -->
        </product>
     </function>
 
@@ -485,8 +485,8 @@
              <independentVar lookup="column">aero/Re</independentVar>
              <tableData>
                               777770      855547     1166655     2177756
-                 -0.0349   2767.6846   2767.6846   2767.6846   2767.6846
-                  0.3491   2806.3723   2806.3723   2806.3723   2806.3723
+                 -0.0349     0.1000      0.1000      0.1000      0.1000
+                  0.3491     0.1000      0.1000      0.1000      0.1000
              </tableData>
            </table>
        </product>
@@ -567,10 +567,10 @@
            <table>
              <independentVar lookup="row">aero/Re</independentVar>
              <tableData>
-                  777770     24.1594
-                  855547      2.0584
-                 1166655      0.9148
-                 2177756      0.2625
+                  777770     0.1000   <!-- Much smaller for rocket (was 24.1594) -->
+                  855547     0.1000   <!-- Much smaller for rocket (was 2.0584) -->
+                 1166655     0.1000   <!-- Much smaller for rocket (was 0.9148) -->
+                 2177756     0.1000   <!-- Much smaller for rocket (was 0.2625) -->
              </tableData>
            </table>
        </product>
@@ -584,7 +584,7 @@
            <property>metrics/bw-ft</property>
            <property>aero/bi2vel</property>
            <property>velocities/r-aero-rad_sec</property>
-           <value> -15.0 </value>  <!-- Much smaller for small rocket -->
+           <value> -0.5 </value>  <!-- Much smaller for rocket (was -15.0) -->
        </product>
     </function>
 

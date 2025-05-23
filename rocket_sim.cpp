@@ -10,6 +10,7 @@
 #include <models/FGMassBalance.h>
 #include <models/FGFCS.h>
 #include <models/propulsion/FGTank.h>
+#include <models/FGAuxiliary.h>
 
 int main() {
     // Create an instance of the JSBSim flight dynamics model executor
@@ -65,7 +66,10 @@ int main() {
 
     // Initialize motor ignition sequence
     bool motor_ignited = false;
+    bool engine_shutdown = false;  // Track engine shutdown state
     double ignition_time = 0.05; // Quick ignition after simulation start
+    double total_impulse = 0.0;  // Track total impulse delivered
+    double last_time = 0.0;      // For impulse integration
     
     std::cout << "Starting L1720 rocket simulation - target apogee ~4000 ft" << std::endl;
     std::cout << "Motor ignition scheduled for t=" << ignition_time << " seconds" << std::endl;
@@ -91,6 +95,16 @@ int main() {
         double velocity_magnitude = sqrt(vx*vx + vy*vy + vz*vz);
         double vertical_velocity = -vz; // In JSBSim: positive Z is down, so -Z is up
         
+        // Check for numerical divergence and terminate gracefully
+        if (velocity_magnitude > 10000.0 || altitude > 100000.0 || std::isnan(velocity_magnitude) || std::isnan(altitude)) {
+            std::cout << "ERROR: Numerical divergence detected!" << std::endl;
+            std::cout << "Time=" << time << "s, Alt=" << altitude << "ft, Vel=" << velocity_magnitude << "ft/s" << std::endl;
+            std::cout << "VX=" << vx << " VY=" << vy << " VZ=" << vz << std::endl;
+            std::cout << "Vertical_vel=" << vertical_velocity << "ft/s" << std::endl;
+            std::cout << "Terminating simulation to prevent crash..." << std::endl;
+            break;
+        }
+
         // Simple velocity debugging during motor burn only
         if (motor_ignited && time < 1.0 && fmod(time, 0.5) < 0.01) {
             std::cout << "DEBUG: Altitude=" << altitude << "ft, Vertical_vel=" << vertical_velocity << "ft/s" << std::endl;
@@ -132,10 +146,48 @@ int main() {
                 double propellant_consumed = 3.9 - propellant_remaining;
                 double burn_percentage = (propellant_consumed / 3.9) * 100.0;
                 
+                // Integrate impulse
+                double dt = time - last_time;
+                if (dt > 0) {
+                    total_impulse += engine->GetThrust() * dt;
+                }
+                
                 std::cout << "t=" << std::fixed << std::setprecision(2) << time << "s: "
                           << "Thrust=" << std::setprecision(1) << engine->GetThrust() << "lbs, " 
                           << "Fuel=" << std::setprecision(2) << propellant_remaining << "lbs, "
-                          << "Burn=" << std::setprecision(1) << burn_percentage << "%" << std::endl;
+                          << "Burn=" << std::setprecision(1) << burn_percentage << "%, "
+                          << "Impulse=" << std::setprecision(1) << total_impulse << "lbf⋅s" << std::endl;
+            }
+        }
+        
+        // Continue impulse integration even after debug output stops
+        if (motor_ignited && !engine_shutdown) {
+            auto engine = fdmExec->GetPropulsion()->GetEngine(0);
+            double dt = time - last_time;
+            if (dt > 0) {
+                total_impulse += engine->GetThrust() * dt;
+            }
+        }
+        
+        last_time = time;
+
+        // Shut down engine when fuel is exhausted or after expected burn time
+        if (motor_ignited && !engine_shutdown) {
+            double propellant_remaining = fdmExec->GetPropulsion()->GetTank(0)->GetContents();
+            double burn_time = time - ignition_time;
+            
+            if (propellant_remaining < 0.1 || burn_time > 3.5) {  // Shut down when fuel low or after 3.5s
+                auto engine = fdmExec->GetPropulsion()->GetEngine(0);
+                engine->SetRunning(false);
+                fdmExec->GetFCS()->SetThrottleCmd(0, 0.0);
+                
+                // Force fuel tank to zero to prevent further table lookups
+                fdmExec->GetPropulsion()->GetTank(0)->SetContents(0.0);
+                
+                engine_shutdown = true;
+                std::cout << "Engine shutdown at t=" << time << "s (fuel=" << propellant_remaining 
+                          << "lbs, burn_time=" << burn_time << "s)" << std::endl;
+                std::cout << "TOTAL IMPULSE DELIVERED: " << total_impulse << " lbf⋅s (expected: 386 lbf⋅s)" << std::endl;
             }
         }
 
@@ -157,6 +209,7 @@ int main() {
 
         // Deploy drogue chute at apogee (but only if above minimum altitude)
         // RE-ENABLED WITH FIXED LOGIC
+        /*
         if (reached_apogee && !drogue_deployed && altitude > 800.0) { // Very high altitude threshold
             fdmExec->SetPropertyValue("external_reactions/drogue_chute/drag_area", 8.0); // Drogue chute drag area
             drogue_deployed = true;
@@ -169,6 +222,7 @@ int main() {
             main_deployed = true;
             std::cout << "Main chute deployed at " << altitude << " ft" << std::endl;
         }
+        */
 
         // Print and save trajectory data with improved output formatting
         if (fmod(time, 0.2) < 0.01) {  // Print every 0.2 seconds for detailed tracking
@@ -196,6 +250,22 @@ int main() {
         if (did_liftoff && reached_apogee && altitude < 5.0) {  // Only terminate after apogee and very low altitude
             std::cout << "Rocket has reached the ground after flight." << std::endl;
             break;
+        }
+
+        // Add detailed monitoring during descent phase
+        if (reached_apogee && altitude < 700.0 && time > 11.0) {
+            if (fmod(time, 0.1) < 0.01) {  // Every 0.1 seconds during critical descent
+                double alpha = fdmExec->GetAuxiliary()->Getalpha() * 180.0/3.14159; // Convert to degrees
+                double beta = fdmExec->GetAuxiliary()->Getbeta() * 180.0/3.14159;
+                double mach = fdmExec->GetAuxiliary()->GetMach();
+                double qbar = fdmExec->GetAuxiliary()->Getqbar();
+                
+                std::cout << "DESCENT DEBUG t=" << std::fixed << std::setprecision(1) << time 
+                          << "s: Alt=" << altitude << "ft, VMag=" << velocity_magnitude 
+                          << "ft/s, VZ=" << vertical_velocity << "ft/s" << std::endl;
+                std::cout << "  Alpha=" << alpha << "deg, Beta=" << beta 
+                          << "deg, Mach=" << mach << ", Qbar=" << qbar << "psf" << std::endl;
+            }
         }
     }
 
