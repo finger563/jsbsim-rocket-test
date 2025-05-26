@@ -13,15 +13,26 @@
 #include <models/propulsion/FGTank.h>
 #include <models/FGAuxiliary.h>
 
-int main() {
+int main(int argc, char* argv[]) {
     // Create an instance of the JSBSim flight dynamics model executor
     std::unique_ptr<JSBSim::FGFDMExec> fdmExec(new JSBSim::FGFDMExec());
 
     // Set the simulation to run at 120 Hz
     fdmExec->Setdt(1.0 / 120.0);
 
+    // get the name of the aircraft from the command line arguments, defaulting
+    // to `rocket` if not provided
+    std::string aircraftName = "rocket";
+
+    if (argc == 2) {
+        aircraftName = argv[1];
+    } else if (argc > 2) {
+        std::cerr << "Usage: " << argv[0] << " [aircraft_name]" << std::endl;
+        return 1;
+    }
+
     // Load the aircraft configuration file
-    if (!fdmExec->LoadModel("my_aircraft")) {
+    if (!fdmExec->LoadModel(aircraftName)) {
         std::cerr << "Failed to load the aircraft model" << std::endl;
         return 1;
     }

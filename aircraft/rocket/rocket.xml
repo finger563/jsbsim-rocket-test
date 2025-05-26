@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="http://jsbsim.sourceforge.net/JSBSim.xsl"?>
 
-<fdm_config name="my_aircraft" version="2.0" release="ALPHA"
+<fdm_config name="rocket" version="2.0" release="ALPHA"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:noNamespaceSchemaLocation="http://jsbsim.sourceforge.net/JSBSim.xsd">
 
@@ -9,16 +9,16 @@
   <author> AeromatiC++ version 3.3.21 </author>
   <filecreationdate> 16 May 2025 </filecreationdate>
   <version>$Revision: 1.80 $</version>
-  <description> Models a my_aircraft. </description>
+  <description> Models a rocket. </description>
  </fileheader>
 
 <!--
-  File:     my_aircraft.xml
+  File:     rocket.xml
   Input parameters:
     Output directory                   : C:\Users\bob\Downloads\
     Create a subdirectory?             : yes
     Overwrite?                         : yes
-    Aircraft name                      : my_aircraft
+    Aircraft name                      : rocket
     Use dedicated system files?        : yes
     Select a system of measurement     : no
     Type of aircraft                   : 0
@@ -56,7 +56,7 @@
     Chute                              : yes
 
   Specifications:
-    name:          my_aircraft
+    name:          rocket
     type:          Single engine Glider, Small Commuter
     stall speed:   795.46 kt
     max weight:    47.00 lbs
