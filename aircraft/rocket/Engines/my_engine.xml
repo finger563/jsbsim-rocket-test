@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!--
+  File:     my_engine.xml
+  Author:   AeromatiC++ v 3.3.21
+
+  See: http://wiki.flightgear.org/JSBSim_Engines#FGRocket
+
+  Inputs:
+    thrust:           444 lb
+
+  Outputs:
+    ISP (sea level)     400.0
+    Fuel Flow Rate (SL)  91.5
+    Ox. Flow Rate (SL)  105.2
+-->
+
+<rocket_engine name="my_engine">
+  <isp>            400.00 </isp>
+  <minthrottle>      0.40  </minthrottle>
+  <maxthrottle>      1.00  </maxthrottle>
+  <slfuelflowmax>   91.50 </slfuelflowmax>
+  <sloxiflowmax>   105.20 </sloxiflowmax>
+</rocket_engine>
