@@ -28,7 +28,7 @@
     Inertia Ixx                        : 0.01
     Inertia Iyy                        : 3.50
     Inertia Izz                        : 1.33
-    Length                             : 9.00
+    Length                             : 9.08
     Select a wing shape                : 2
     Wing span                          : 0.50
     Wing area                          : 0.25
@@ -61,7 +61,7 @@
     stall speed:   795.46 kt
     max weight:    47.00 lbs
     Fuselage: 
-     length:        9.00 ft
+     length:        9.08 ft
      diameter:      4.50 ft
      finess ratio:  2.00
     wing: 
@@ -102,7 +102,7 @@
    <htailarea unit="FT2"> 0.0      </htailarea>  <!-- No horizontal tail -->
    <htailarm  unit="FT" > 0.0      </htailarm>   <!-- No tail arm -->
    <vtailarea  unit="FT2">0.08     </vtailarea>  <!-- Total fin area: 4 fins × 0.02 ft² each -->
-   <vtailarm  unit="FT" > 3.5      </vtailarm>   <!-- Fin arm: 95" - 54.9" = 40.1" = 3.34 ft -->
+   <vtailarm  unit="FT" > 3.34     </vtailarm>   <!-- Fin arm: 95" - 54.9" = 40.1" = 3.34 ft -->
    <location name="AERORP" unit="FT">  <!-- Center of Pressure at 68.1" from diagram -->
      <x> 5.675     </x>  <!-- 68.1" = 5.675 ft from nose -->
      <y> 0.00     </y>
@@ -390,7 +390,7 @@
        <product>
            <property>aero/qbar-psf</property>
            <value>0.08</value>  <!-- Fin area in ft² -->
-           <value>3.5</value>   <!-- Fin arm in ft (distance from CG to fins) -->
+           <value>3.34</value>  <!-- Fin arm in ft (distance from CG to fins) -->
            <property>aero/alpha-rad</property>
            <value> -1.0 </value>  <!-- Fins provide restoring pitch moment -->
        </product>
@@ -412,7 +412,7 @@
        <product>
            <property>aero/qbar-psf</property>
            <value>0.08</value>  <!-- Fin area in ft² -->
-           <value>3.5</value>   <!-- Fin arm in ft -->
+           <value>3.34</value>  <!-- Fin arm in ft -->
            <property>aero/ci2vel</property>
            <property>velocities/q-aero-rad_sec</property>
            <value> -0.5 </value>  <!-- Fin pitch damping -->
@@ -514,7 +514,7 @@
        <product>
            <property>aero/qbar-psf</property>
            <value>0.08</value>  <!-- Fin area in ft² -->
-           <value>3.5</value>   <!-- Fin arm in ft (distance from CG to fins) -->
+           <value>3.34</value>  <!-- Fin arm in ft (distance from CG to fins) -->
            <property>aero/beta-rad</property>
            <value> -1.0 </value>  <!-- Fins provide restoring yaw moment -->
        </product>
@@ -537,7 +537,7 @@
        <product>
            <property>aero/qbar-psf</property>
            <value>0.08</value>  <!-- Fin area in ft² -->
-           <value>3.5</value>   <!-- Fin arm in ft -->
+           <value>3.34</value>  <!-- Fin arm in ft -->
            <property>aero/bi2vel</property>
            <property>velocities/r-aero-rad_sec</property>
            <value> -0.5 </value>  <!-- Fin yaw damping -->

@@ -27,7 +27,7 @@ This project simulates a small suborbital amateur rocket using JSBSim flight dyn
 - **Dry Mass**: 43.0 lbs (including recovery system)
 - **Wet Mass**: 46.9 lbs (with motor propellant)
 - **Motor**: Cesaroni L1720 solid rocket motor
-- **Expected Apogee**: ~4000 feet
+- **Expected Apogee**: ~3200 feet
 - **Recovery**: Two-stage parachute system
   - Drogue chute at apogee
   - Main chute deployment at 500 feet
@@ -70,6 +70,49 @@ The simulation will:
 - Console output: Real-time simulation status and key events
 
 ## Analysis and Plotting
+
+The project includes Python tools for analyzing and visualizing the rocket trajectory data:
+
+### Python Analysis Tools
+
+1. **`analyze_trajectory.py`** - Comprehensive trajectory analysis
+   - Calculates flight performance metrics (max altitude, velocity, flight time)
+   - Analyzes parachute deployment events and descent rates
+   - Computes horizontal drift and landing position
+   - Provides detailed flight phase breakdown
+   - Outputs trajectory samples for verification
+
+2. **`plot_simple.py`** - 3D trajectory visualization
+   - Creates 4-panel plot with 3D trajectory, altitude vs time, velocity vs time, and horizontal drift
+   - Marks key events (launch, apogee, parachute deployments, landing)
+   - Requires matplotlib: `pip install matplotlib`
+
+### Usage
+
+It's recommended to use a Python virtual environment to avoid conflicts with system packages:
+
+```bash
+# Create a virtual environment
+python3 -m venv env
+
+# Activate the virtual environment
+# On macOS/Linux:
+source env/bin/activate
+# On Windows:
+# env\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run trajectory analysis
+python analyze_trajectory.py
+
+# Generate plots
+python plot_simple.py
+
+# Deactivate virtual environment when done
+deactivate
+```
 
 ### Example Output
 
@@ -133,11 +176,13 @@ The JSBSim aircraft configuration files are located in:
 ## Motor Characteristics
 
 The Cesaroni L1720 motor simulation includes:
-- **Total Impulse**: 1720 N⋅s (386 lbf⋅s)
-- **Burn Time**: ~2.1 seconds  
-- **Average Thrust**: 121 lbf
-- **Peak Thrust**: 157 lbf
+- **Total Impulse**: 3660 N⋅s (822 lbf⋅s)
+- **Burn Time**: 2.1 seconds  
+- **Average Thrust**: 391 lbf
+- **Peak Thrust**: 438 lbf (1946 N)
 - **Specific Impulse**: 220 seconds
+- **Propellant Mass**: 3.9 lbs (1755 g)
+- **Thrust Profile**: Regressive curve with peak, dip, buildup, and decline phases
 
 ## Recovery System
 
