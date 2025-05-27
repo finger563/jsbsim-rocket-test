@@ -29,14 +29,13 @@ This project simulates a small suborbital amateur rocket using JSBSim flight dyn
 ## Compilation
 
 ```bash
-g++ -std=c++11 -I/path/to/jsbsim/include -L/path/to/jsbsim/lib \
-    rocket_sim.cpp -ljsbsim -o rocket_sim
+./build.sh
 ```
 
 ## Running the Simulation
 
 ```bash
-./rocket_sim
+./build/rocket_sim
 ```
 
 The simulation will:
@@ -55,15 +54,15 @@ The simulation will:
 ## Aircraft Configuration
 
 The JSBSim aircraft configuration files are located in:
-- `aircraft/my_aircraft/my_aircraft.xml` - Main aircraft definition
-- `aircraft/my_aircraft/Engines/cesaroni_l1720_engine.xml` - Motor thrust curve
-- `aircraft/my_aircraft/Engines/l1720_nozzle.xml` - Nozzle specifications
+- `aircraft/rocket/rocket.xml` - Main aircraft definition
+- `aircraft/rocket/Engines/cesaroni_l1720_engine.xml` - Motor thrust curve
+- `aircraft/rocket/Engines/l1720_nozzle.xml` - Nozzle specifications
 
 ## Motor Characteristics
 
 The Cesaroni L1720 motor simulation includes:
 - **Total Impulse**: 1720 N⋅s (386 lbf⋅s)
-- **Burn Time**: ~3.2 seconds  
+- **Burn Time**: ~2.1 seconds  
 - **Average Thrust**: 121 lbf
 - **Peak Thrust**: 157 lbf
 - **Specific Impulse**: 220 seconds
